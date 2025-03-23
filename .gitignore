@@ -1,0 +1,31 @@
+# Byte-compiled / cached
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+ssis_env/
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+*.spec
+
+# Ignore CSV files
+# *.csv
+
+# Temp Code Runners
+tempCodeRunnerFile.*
+
+# Package Installation
+*.egg-info/
+
+# pytest
+.pytest_cache
+
+# tests
+tests/
