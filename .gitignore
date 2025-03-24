@@ -8,6 +8,7 @@ venv/
 .env/
 .venv/
 ssis_env/
+.env
 
 # Distribution / Packaging
 build/
