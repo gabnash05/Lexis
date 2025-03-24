@@ -2,6 +2,7 @@ from typing import List, Dict, Any
 import utils.csvUtils as csvUtils
 from pathlib import Path
 
+from database.db import getConnection
 
 class College:
   COLLEGE_CSV_FILEPATH = Path(__file__).parent.parent.parent / "data" / "colleges.csv"
@@ -17,11 +18,6 @@ class College:
       "College Name": self.name,
     }
   
-  # Only for initializing when the application starts
-  @staticmethod
-  def intializeProgramStorage() -> bool:
-    return csvUtils.initializeCsv(College.COLLEGE_CSV_FILEPATH, College.COLLEGE_HEADERS)
-  
   # Checks if College Code already exists
   @staticmethod
   def collegeCodeExists(collegeCode: str) -> bool:
@@ -30,7 +26,23 @@ class College:
   # Add new college
   @staticmethod
   def addNewCollege(college: Any) -> bool:
-    return csvUtils.appendRowCsv(College.COLLEGE_CSV_FILEPATH, college.toDict())
+    conn = getConnection()
+    if conn:
+      cursor = conn.cursor()
+      query = """
+        INSERT INTO colleges (college_code, college_name)
+        VALUES (%s, %s)
+      """
+      newCollege = college.toDict()
+
+      try:
+        cursor.execute(query, (newCollege["College Code"], newCollege["College Name"]))
+        conn.commit()
+      except Exception as e:
+        print(f"Error inserting student: {e}")
+      finally:
+        cursor.close()
+        conn.close()
   
   # Get college record
   @staticmethod

@@ -1,6 +1,4 @@
 import sys
-import os
-from dotenv import load_dotenv
 
 from PyQt6.QtWidgets import QApplication
 from src.views.MainWindow import MainWindow

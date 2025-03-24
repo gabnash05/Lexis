@@ -88,7 +88,6 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2021-3798,Isaiah,Robinson,2,Others,BTLED-HE
 2022-8534,Maya,Nguyen,4,Male,N/A
 2022-2972,Sebastian,Cunningham,4,Male,BA SocSci
-2021-1152,Leah,Nelson,4,Others,BS Psych
 2022-7589,Wyatt,Ross,4,Male,BSN
 2023-5385,Owen,Sanchez,5,Male,BS Psych
 2023-2305,Adam,Graham,3,Male,BS Biotech
@@ -110,7 +109,7 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2021-2662,Savannah,Myers,3,Female,BS EnvSci
 2021-8589,Claire,Medina,1,Male,BS Stat
 2022-4302,Savannah,Graham,2,Female,BA Comm
-2021-1293,Jonathan,Rogers,2,Female,BSBA-HRM
+2021-1293,Jonathan,Rogers,2,Male,BSBA-HRM
 2022-4036,Angel,Lee,2,Male,BS Finance
 2021-3174,Isaac,Perez,2,Female,BS DataSci
 2022-2525,Oliver,Scott,1,Others,BS Geology
@@ -315,7 +314,6 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2023-5261,Lucy,Lopez,5,Female,BSDent
 2023-2959,Charlotte,King,2,Female,BSEd-PE
 2021-2569,Hailey,Jimenez,2,Female,BA Journ
-2021-1087,Kobe,Bryant,3,Male,BSEd-PE
 2024-2902,Nathan,Watson,2,Male,BSME
 2023-6980,David,Marshall,4,Others,BA IR
 2022-9068,Anthony,Mendoza,1,Male,BSMLS
@@ -331,7 +329,7 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2023-9177,Robert,Harrison,4,Male,BTLED-IA
 2021-7446,Riley,Wright,1,Male,BSEd-SocSci
 2023-3715,Aurora,Reed,1,Female,BS NavalEng
-2021-1264,Miles,Green,5,Male,BSEd-Sci
+2021-1264,Miles,Green,5,Female,BSEd-Sci
 2021-8342,Delilah,Richardson,4,Female,BS Psych
 2021-3629,Sophia,Miller,4,Female,BS Psych
 2021-8111,Ariana,Ray,5,Others,BSChE
@@ -374,7 +372,6 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2022-8699,Lucy,Gordon,1,Male,BTLED-HE
 2021-1387,Ella,Hernandez,5,Female,BSRE
 2021-6247,Alexander,Nelson,3,Others,BS Psych
-2021-1183,Eli,Torres,2,Male,BSEd-SocSci
 2021-2442,Julian,Perez,2,Female,BA Phil
 2024-1908,Andrew,Garcia,2,Others,BSCE
 2021-4199,Eli,Martinez,1,Male,BA IR
@@ -415,7 +412,7 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2023-5452,Caleb,Kim,3,Female,BA IR
 2023-9196,Delilah,Rivera,2,Others,BS Forensic Sci
 2023-4706,Jackson,Cook,2,Male,BSChE
-2021-1250,Cameron,Lee,1,Others,BS Math
+2021-1250,Cameron,Lee,1,Female,BS Math
 2021-3809,Michael,Price,1,Others,BS GameDev
 2024-3335,Leo,Adams,3,Female,BA DevCom
 2024-3107,Noah,Reyes,3,Male,BS Entrepreneurship
@@ -432,7 +429,6 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2024-1917,Christian,Garcia,3,Male,BS Finance
 2024-4153,Christopher,Clark,3,Others,BS Geology
 2022-7603,Alexander,Fisher,5,Male,BS Entrepreneurship
-2021-1031,Theodore,Kim,4,Male,N/A
 2022-2084,Christopher,Myers,3,Male,BSEd-PE
 2023-5248,Hailey,Jordan,2,Female,BSIT
 2022-2230,Hudson,Gray,3,Female,BS Entrepreneurship
@@ -498,3 +494,4 @@ ID Number,First Name,Last Name,Year Level,Gender,Program Code
 2021-9977,Hudson,White,3,Male,BSDA
 2023-3882,Michael,Price,1,Others,BS Public Ad
 2023-2343,Joaquin,Ermita,2,Male,BSCS
+2025-0001,John,Doe,1,Male,BS Math
