@@ -63,7 +63,7 @@ class UpdateProgramDialog(QtWidgets.QDialog):
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
     colleges = getAllColleges()
-    collegeCodeList = [college["College Code"] for college in colleges]
+    collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
 
     if programData[2] != "N/A":
@@ -98,7 +98,7 @@ class UpdateProgramDialog(QtWidgets.QDialog):
     formLayout.addRow(self.programInfoLabel)
     formLayout.addRow("Program Code:", self.programCodeInput)
     formLayout.addRow("Name:", self.programNameInput)
-    formLayout.addRow("College Code:", self.collegeCodeInput)
+    formLayout.addRow("college_code:", self.collegeCodeInput)
     formLayout.addRow(QtWidgets.QLabel(""))
 
     # Spacer before button

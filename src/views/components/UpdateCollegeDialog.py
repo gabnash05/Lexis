@@ -80,7 +80,7 @@ class UpdateCollegeDialog(QtWidgets.QDialog):
       formLayout.addRow(QtWidgets.QLabel(""))
 
       formLayout.addRow(self.collegeInfoLabel)
-      formLayout.addRow("College Code:", self.collegeCodeInput)
+      formLayout.addRow("college_code:", self.collegeCodeInput)
       formLayout.addRow("Name:", self.collegeNameInput)
       formLayout.addRow(QtWidgets.QLabel(""))
 

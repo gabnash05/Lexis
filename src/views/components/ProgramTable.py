@@ -12,8 +12,8 @@ from controllers.programControllers import removeProgram
 
 class ProgramTable(QtWidgets.QTableWidget):
   # Program variables
-  headers = ["Program Code", "Program Name", "College Code", "Operations"]
-  sortByFields = [("Program Code", "Program Name"), ("Program Name", "College Code"), ("College Code", "Program Name")]
+  headers = ["Program Code", "Program Name", "college_code", "Operations"]
+  sortByFields = [("Program Code", "Program Name"), ("Program Name", "college_code"), ("college_code", "Program Name")]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -122,7 +122,7 @@ class ProgramTable(QtWidgets.QTableWidget):
       programName = QTableWidgetItem(program["Program Name"])
       self.setItem(row, 1, programName)
 
-      collegeCode = QTableWidgetItem(program["College Code"])
+      collegeCode = QTableWidgetItem(program["college_code"])
       collegeCode.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 2, collegeCode)
       
@@ -172,7 +172,7 @@ class ProgramTable(QtWidgets.QTableWidget):
     newProgram = {
       "Program Code": programData[0],
       "Program Name": programData[1],
-      "College Code": programData[2],
+      "college_code": programData[2],
     }
 
     if any(program["Program Code"] == newProgram["Program Code"] for program in self.programs):
@@ -190,7 +190,7 @@ class ProgramTable(QtWidgets.QTableWidget):
         for key, value in {
           "Program Code": programData[1],
           "Program Name": programData[2],
-          "College Code": programData[3],
+          "college_code": programData[3],
         }.items()
         if value is not None
       }

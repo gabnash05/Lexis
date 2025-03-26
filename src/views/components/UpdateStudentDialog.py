@@ -1,3 +1,4 @@
+
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 
@@ -82,7 +83,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
     colleges = getAllColleges()
-    collegeCodeList = [college["College Code"] for college in colleges]
+    collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
     
     if studentData[6] != "N/A":
@@ -136,7 +137,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     formLayout.addRow(self.studentInfoLabel)
     formLayout.addRow("ID Number:", self.idInput)
     formLayout.addRow("Year Level:", self.yearLevelInput)
-    formLayout.addRow("College Code:", self.collegeCodeInput)
+    formLayout.addRow("college_code:", self.collegeCodeInput)
     formLayout.addRow("Program Code:", self.programCodeInput)
 
     # Spacer before button
@@ -174,7 +175,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.programCodeInput.clear()
 
     # Add new program options
-    programs = searchProgramsByField(selectedCollege, "College Code")
+    programs = searchProgramsByField(selectedCollege, "college_code")
     programCodeList = [program["Program Code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 

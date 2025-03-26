@@ -9,7 +9,7 @@ from views.components.UpdateProgramDialog import UpdateProgramDialog
 
 
 class ProgramsPage(QtWidgets.QWidget):
-  searchByFields = ["Program Code", "Program Name", "College Code"]
+  searchByFields = ["Program Code", "Program Name", "college_code"]
 
   statusMessageSignal = pyqtSignal(str, int)
   enterPressedSignal = pyqtSignal()
@@ -512,14 +512,14 @@ class ProgramsPage(QtWidgets.QWidget):
     self.searchByComboBox.setPlaceholderText(_translate("mainWindow", "Search by"))
     self.searchByComboBox.setItemText(1, _translate("mainWindow", "Program Code"))
     self.searchByComboBox.setItemText(2, _translate("mainWindow", "Program Name"))
-    self.searchByComboBox.setItemText(3, _translate("mainWindow", "College Code"))
+    self.searchByComboBox.setItemText(3, _translate("mainWindow", "college_code"))
     self.programLabel.setText(_translate("mainWindow", "Programs"))
     self.addProgramButton.setText(_translate("mainWindow", "Add Program"))
     self.sortByComboBox.setToolTip(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setPlaceholderText(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setItemText(1, _translate("mainWindow", "Program Code"))
     self.sortByComboBox.setItemText(2, _translate("mainWindow", "Program Name"))
-    self.sortByComboBox.setItemText(3, _translate("mainWindow", "College Code"))
+    self.sortByComboBox.setItemText(3, _translate("mainWindow", "college_code"))
     self.sortingOrderComboBox.setItemText(0, _translate("mainWindow", "Ascending"))
     self.sortingOrderComboBox.setItemText(1, _translate("mainWindow", "Descending"))
 

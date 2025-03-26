@@ -21,25 +21,48 @@ class College:
   # Checks if College Code already exists
   @staticmethod
   def collegeCodeExists(collegeCode: str) -> bool:
-    return csvUtils.checkIdIfExistsCsv(College.COLLEGE_CSV_FILEPATH, collegeCode)
+    conn = getConnection()
+    
+    if not conn:
+      return False 
+
+    try:
+      cursor = conn.cursor()
+
+      query = "SELECT 1 FROM colleges WHERE college_code = %s LIMIT 1;"
+      cursor.execute(query, (collegeCode,))
+
+      return cursor.fetchone() is not None
+
+    except Exception as e:
+      print(f"Error checking if college code exists: {e}")
+      return False
+
+    finally:
+      cursor.close()
+      conn.close()
 
   # Add new college
   @staticmethod
   def addNewCollege(college: Any) -> bool:
     conn = getConnection()
     if conn:
-      cursor = conn.cursor()
+      cursor = conn.cursor(dictionary=True)
       query = """
         INSERT INTO colleges (college_code, college_name)
-        VALUES (%s, %s)
+        VALUES (%s, %s);
       """
       newCollege = college.toDict()
 
       try:
         cursor.execute(query, (newCollege["College Code"], newCollege["College Name"]))
         conn.commit()
+
+        return cursor.rowcount > 0
+      
       except Exception as e:
-        print(f"Error inserting student: {e}")
+        print(f"Error inserting college: {e}")
+        return False
       finally:
         cursor.close()
         conn.close()
@@ -47,27 +70,138 @@ class College:
   # Get college record
   @staticmethod
   def getCollegeRecordByCode(collegeCode: str) -> Dict[str, str]:
-    return csvUtils.getRowByIdCsv(College.COLLEGE_CSV_FILEPATH, collegeCode)
+    conn = getConnection()
+    college = None
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM colleges WHERE college_code = %s;
+      """
+
+      try:
+        cursor.execute(query, (collegeCode,))
+
+        college = cursor.fetchone()
+      
+      except Exception as e:
+        print(f"Error fetching colleges by code: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return college
   
   # Get college record
   @staticmethod
   def getCollegeRecordByName(collegeName: str) -> Dict[str, str]:
-    return csvUtils.getRowsByFieldCsv(College.COLLEGE_CSV_FILEPATH, collegeName, College.COLLEGE_HEADERS[1])
+    conn = getConnection()
+    college = None
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM colleges WHERE college_name = %s;
+      """
+
+      try:
+        cursor.execute(query, (collegeName,))
+
+        college = cursor.fetchone()
+      
+      except Exception as e:
+        print(f"Error fetching colleges by name: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return college
   
   # Get all college records
   @staticmethod
   def getAllCollegeRecords() -> List[Dict[str, str]]:
-    return csvUtils.readCsv(College.COLLEGE_CSV_FILEPATH)
+    conn = getConnection()
+    colleges = []
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM colleges;
+      """
+
+      try:
+        cursor.execute(query)
+
+        colleges = cursor.fetchall()
+      
+      except Exception as e:
+        print(f"Error fetching all colleges: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return colleges
 
   # Get program record
   @staticmethod
   def updateCollegeRecord(collegeCode: str, updateData: Dict[str, str]) -> bool:
-    return csvUtils.updateRowByFieldCsv(College.COLLEGE_CSV_FILEPATH, College.COLLEGE_HEADERS[0], collegeCode, updateData)
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    setClause = ", ".join(f'{key} = %s' for key in updateData.keys())
+    values = tuple(updateData.values()) + (collegeCode,)
+
+    query = f"""
+      UPDATE colleges
+      SET {setClause}
+      WHERE college_code = %s;
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Error updating college: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
   
   # Remove college
   @staticmethod
   def deleteCollegeRecord(collegeCode: str) -> bool:
-    return csvUtils.deleteRowByFieldCsv(College.COLLEGE_CSV_FILEPATH, College.COLLEGE_HEADERS[0], collegeCode)
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    query = f"""
+      DELETE FROM colleges WHERE college_code = %s;
+    """
+
+    try:
+      cursor.execute(query, (collegeCode,))
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Error deleting college: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
   
   # Searches for college records without a search field
   @staticmethod

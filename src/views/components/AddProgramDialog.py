@@ -55,10 +55,10 @@ class AddProgramDialog(QtWidgets.QDialog):
 
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
-    # Getting all college codes
+    # Getting all college_codes
     self.collegeCodeInput.addItems(["Select College"])
     colleges = getAllColleges()
-    collegeCodeList = [college["College Code"] for college in colleges]
+    collegeCodeList = [college["college_code"] for college in colleges]
 
     self.collegeCodeInput.addItems(collegeCodeList)
     self.collegeCodeInput.model().item(0).setEnabled(False)
@@ -93,7 +93,7 @@ class AddProgramDialog(QtWidgets.QDialog):
     formLayout.addRow(self.programInfoLabel)
     formLayout.addRow("Program Code:", self.programCodeInput)
     formLayout.addRow("Program Name:", self.programNameInput)
-    formLayout.addRow("College Code:", self.collegeCodeInput)
+    formLayout.addRow("college_code:", self.collegeCodeInput)
 
     # Add vertical spacer to create a gap before the button
     verticalSpacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)

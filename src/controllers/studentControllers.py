@@ -10,7 +10,6 @@ STUDENT_SEARCH_FIELDS = ["ID Number", "First Name", "Last Name", "Program Code",
 def initializeAllCsv():
   Student.intializeStudentStorage()
   Program.intializeProgramStorage()
-  #College.intializeProgramStorage()
 
 # ADD STUDENT FORM: add a student record
 def addStudent(idNumber: str, firstName: str, lastName: str, yearLevel: str, gender: str, programCode: str, collegeCode: str) -> str:

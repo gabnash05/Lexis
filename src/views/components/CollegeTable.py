@@ -12,7 +12,7 @@ from controllers.collegeControllers import getAllColleges, removeCollege
 class CollegeTable(QtWidgets.QTableWidget):
   # Student variables
   headers = ["College Code", "College Name", "Operations"]
-  sortByFields = [("College Code", "College Name"), ("College Name", "College Code")]
+  sortByFields = [("college_code", "college_name"), ("college_name", "college_code")]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -93,7 +93,7 @@ class CollegeTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayColleges(self):
-    if not self.colleges or "College Code" not in self.colleges[0]:
+    if not self.colleges or self.colleges[0] is None:
       self.setRowCount(0)
       self.statusMessageSignal.emit("No colleges found", 3000)
       return
@@ -117,9 +117,9 @@ class CollegeTable(QtWidgets.QTableWidget):
     self.setRowCount(len(self.colleges))
     
     for row, college in enumerate(self.colleges):
-      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(college["College Code"])))
+      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(college["college_code"])))
 
-      collegeName = QTableWidgetItem(college["College Name"])
+      collegeName = QTableWidgetItem(college["college_name"])
       self.setItem(row, 1, collegeName)
       
       operationsWidget = QtWidgets.QWidget()
@@ -166,11 +166,11 @@ class CollegeTable(QtWidgets.QTableWidget):
   
   def addNewCollegeToTable(self, collegeData):
     newCollege = {
-      "College Code": collegeData[0],
-      "College Name": collegeData[1],
+      "college_code": collegeData[0],
+      "college_name": collegeData[1],
     }
 
-    if any(college["College Code"] == newCollege["College Code"] for college in self.colleges):
+    if any(college["college_code"] == newCollege["college_code"] for college in self.colleges):
       return
 
     self.colleges.append(newCollege)
@@ -183,14 +183,14 @@ class CollegeTable(QtWidgets.QTableWidget):
       newCollege = {
         key: value
         for key, value in {
-          "College Code": collegeData[1],
-          "College Name": collegeData[2],
+          "college_code": collegeData[1],
+          "college_name": collegeData[2],
           }.items()
         if value is not None
       }
 
     for college in self.colleges:
-      if college["College Code"] == originalCollegeCode:
+      if college["college_code"] == originalCollegeCode:
         college.update(newCollege)
     
     self.refreshDisplayColleges()
@@ -241,13 +241,13 @@ class CollegeTable(QtWidgets.QTableWidget):
 
       for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
         college = self.colleges[row]
-        result = removeCollege(college["College Code"])
+        result = removeCollege(college["college_code"])
 
         if result == "College removed successfully.":
           self.colleges.pop(row)
           self.removeRow(row)
         else:
-          failedDeletions.append(college["College Code"])
+          failedDeletions.append(college["college_code"])
 
       # Emit status message
       if failedDeletions:
@@ -257,11 +257,11 @@ class CollegeTable(QtWidgets.QTableWidget):
     
     # Multiple Deletions
     else:
-      if not self.showDeleteConfirmation(self, college["College Name"]):
+      if not self.showDeleteConfirmation(self, college["college_name"]):
         return
 
       # Remove from CSV
-      result = removeCollege(college["College Code"])
+      result = removeCollege(college["college_code"])
 
       if result != "College removed successfully.":
         self.statusMessageSignal.emit(result, 3000)
@@ -270,7 +270,7 @@ class CollegeTable(QtWidgets.QTableWidget):
       # Find the row index of the program
       rowToRemove = -1
       for row in range(self.rowCount()):
-        if self.item(row, 0) and self.item(row, 0).text() == str(college["College Code"]):
+        if self.item(row, 0) and self.item(row, 0).text() == str(college["college_code"]):
           rowToRemove = row
           break
 

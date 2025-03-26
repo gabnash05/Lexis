@@ -9,7 +9,7 @@ from utils.inputUtils import validateIdNumber
 
 
 class StudentsPage(QtWidgets.QWidget):
-    searchByFields = ["ID Number", "First Name", "Last Name", "Program Code", "College Code"]
+    searchByFields = ["ID Number", "First Name", "Last Name", "Program Code", "college_code"]
 
     statusMessageSignal = pyqtSignal(str, int)
     enterPressedSignal = pyqtSignal()
@@ -514,7 +514,7 @@ class StudentsPage(QtWidgets.QWidget):
         self.searchByComboBox.setItemText(2, _translate("mainWindow", "First Name"))
         self.searchByComboBox.setItemText(3, _translate("mainWindow", "Last Name"))
         self.searchByComboBox.setItemText(4, _translate("mainWindow", "Program Code"))
-        self.searchByComboBox.setItemText(5, _translate("mainWindow", "College Code"))
+        self.searchByComboBox.setItemText(5, _translate("mainWindow", "college_code"))
         self.studentLabel.setText(_translate("mainWindow", "Students"))
         self.addStudentButton.setText(_translate("mainWindow", "Add Student"))
         self.sortByComboBox.setToolTip(_translate("mainWindow", "Sort by"))

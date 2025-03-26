@@ -1,3 +1,4 @@
+
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal, Qt
 
@@ -9,7 +10,10 @@ from views.components.UpdateCollegeDialog import UpdateCollegeDialog
 
 
 class CollegesPage(QtWidgets.QWidget):
-  searchByFields = ["College Code", "College Name"]
+  searchByFields = {
+    "College Code": "college_code",
+    "College Name": "college_name"
+}
 
   statusMessageSignal = pyqtSignal(str, int)
   spacebarPressedSignal = pyqtSignal()
@@ -529,10 +533,10 @@ class CollegesPage(QtWidgets.QWidget):
 
   # Search students
   def searchColleges(self):
-    self.displayMessageToStatusBar("Searching...", 3000)
+    self.displayMessageToStatusBar("Searching...", 500)
     
     searchValue = self.searchBarLineEdit.text().strip()
-    searchField = self.searchByComboBox.currentText()
+    searchField = self.searchByFields[self.searchByComboBox.currentText()]
 
     if searchValue == "":
       colleges = searchCollegesByField(searchValue)

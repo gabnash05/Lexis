@@ -12,7 +12,7 @@ from views.components.UpdateBatchStudentDialog import UpdateBatchStudentDialog
 class StudentTable(QtWidgets.QTableWidget):
   # Student variables
   headers = ["ID Number", "Name", "Gender", "Year Level", "Program", "College", "Operations"]
-  sortByFields = [("ID Number", "Last Name"), ("First Name", "Last Name"), ("Last Name", "First Name"), ("Gender", "Last Name"), ("Year Level", "Last Name"), ("Program Code", "Last Name"), ("College Code", "Last Name")]
+  sortByFields = [("ID Number", "Last Name"), ("First Name", "Last Name"), ("Last Name", "First Name"), ("Gender", "Last Name"), ("Year Level", "Last Name"), ("Program Code", "Last Name"), ("college_code", "Last Name")]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -132,10 +132,10 @@ class StudentTable(QtWidgets.QTableWidget):
       programCodeItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 4, programCodeItem)
 
-      if student["College Code"] is None:
-        student["College Code"] = "N/A"
+      if student["college_code"] is None:
+        student["college_code"] = "N/A"
       
-      collegeCodeItem = QTableWidgetItem(student["College Code"])
+      collegeCodeItem = QTableWidgetItem(student["college_code"])
       collegeCodeItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 5, collegeCodeItem)
       
@@ -189,7 +189,7 @@ class StudentTable(QtWidgets.QTableWidget):
       "Gender": studentData[3],
       "Year Level": studentData[4],
       "Program Code": studentData[5],
-      "College Code": studentData[6]
+      "college_code": studentData[6]
     }
 
     if any(student["ID Number"] == newStudent["ID Number"] for student in self.students):
@@ -210,7 +210,7 @@ class StudentTable(QtWidgets.QTableWidget):
           "Year Level": studentData[5],
           "Gender": studentData[4],
           "Program Code": studentData[6],
-          "College Code": studentData[7]
+          "college_code": studentData[7]
         }.items()
         if value is not None
       }
@@ -255,7 +255,7 @@ class StudentTable(QtWidgets.QTableWidget):
         self.item(row, 3).text() if self.item(row, 3) else "",  # Year Level
         self.item(row, 2).text() if self.item(row, 2) else "",  # Gender
         self.item(row, 4).text() if self.item(row, 4) else "",  # Program Code
-        self.item(row, 5).text() if self.item(row, 5) else "",  # College Code
+        self.item(row, 5).text() if self.item(row, 5) else "",  # college_code
       ]
       for row in selectedRows
     ]

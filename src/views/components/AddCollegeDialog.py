@@ -80,8 +80,8 @@ class AddCollegeDialog(QtWidgets.QDialog):
     formLayout.addRow(QtWidgets.QLabel(""))  # Spacer under title
 
     formLayout.addRow(self.collegeInfoLabel)
-    formLayout.addRow("College Code:", self.collegeCodeInput)
-    formLayout.addRow("College Name:", self.collegeNameInput)
+    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("college_name:", self.collegeNameInput)
 
     # Add vertical spacer to create a gap before the button
     verticalSpacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)

@@ -76,7 +76,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     self.programCodeInput = QtWidgets.QComboBox(self)
 
     colleges = getAllColleges()
-    collegeCodeList = [college["College Code"] for college in colleges]
+    collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems([""] + collegeCodeList)
 
     # Update programs when college changes
@@ -85,7 +85,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     formLayout.addRow("Students:", self.idLabel)
     formLayout.addRow("Year Level:", self.yearLevelInput)
     formLayout.addRow("Gender:", self.genderInput)
-    formLayout.addRow("College Code:", self.collegeCodeInput)
+    formLayout.addRow("college_code:", self.collegeCodeInput)
     formLayout.addRow("Program Code:", self.programCodeInput)
 
     # Update Button
@@ -115,7 +115,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
 
   def updateProgramOptions(self):
     selectedCollege = self.collegeCodeInput.currentText()
-    programs = searchProgramsByField(selectedCollege, "College Code")
+    programs = searchProgramsByField(selectedCollege, "college_code")
     programCodeList = [program["Program Code"] for program in programs]
 
     self.programCodeInput.clear()
@@ -133,7 +133,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     programCode = self.programCodeInput.currentText() if self.programCodeInput.currentText() != "" else None
 
     if collegeCode is not None:
-      programsInCollege = searchProgramsByField(collegeCode, "College Code")
+      programsInCollege = searchProgramsByField(collegeCode, "college_code")
       if len(programsInCollege) == 0:
         self.showStatusMessage("Selected College has no Programs")
         return

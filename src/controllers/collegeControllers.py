@@ -4,7 +4,7 @@ from model.College import College
 from typing import List, Dict, Any
 from utils.inputUtils import *
 
-COLLEGE_SEARCH_FIELDS = ["College Code", "College Name"]
+COLLEGE_SEARCH_FIELDS = ["college_code", "college_name"]
 
 # INITIALIZING
 def initializeAllCsv():
@@ -51,18 +51,18 @@ def searchCollegesByField(value: str, field: str = None) -> List[Dict[str, str]]
 def updateCollege(originalCollegeCode: str, newCollegeCode: Any, newCollegeName: Any) -> bool:
 
   if not College.collegeCodeExists(originalCollegeCode):
-    return "College Code does not exist"
+    return "college_code does not exist"
 
   updateData = {
-    "College Code": newCollegeCode, 
-    "College Name": newCollegeName,
+    "college_code": newCollegeCode, 
+    "college_name": newCollegeName,
   }
 
   isSuccessful = College.updateCollegeRecord(originalCollegeCode, updateData)
 
   if isSuccessful and newCollegeCode:
     updateData = {
-      "College Code": newCollegeCode
+      "college_code": newCollegeCode
     }
 
     # Update programs under college
@@ -84,7 +84,7 @@ def removeCollege(collegeCode: str) -> str:
 
   if isSuccessful:
     updateData = {
-      "College Code": "N/A",
+      "college_code": "N/A",
     }
 
     # Updates all programs under College
