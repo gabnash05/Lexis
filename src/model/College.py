@@ -1,5 +1,4 @@
 from typing import List, Dict, Any
-import utils.csvUtils as csvUtils
 from pathlib import Path
 
 from database.db import getConnection
@@ -76,7 +75,9 @@ class College:
     if conn:
       cursor = conn.cursor(dictionary=True)
       query = """
-        SELECT * FROM colleges WHERE college_code = %s;
+        SELECT * FROM colleges 
+        WHERE college_code = %s
+        ORDER BY college_code;
       """
 
       try:
@@ -101,7 +102,9 @@ class College:
     if conn:
       cursor = conn.cursor(dictionary=True)
       query = """
-        SELECT * FROM colleges WHERE college_name = %s;
+        SELECT * FROM colleges 
+        WHERE college_name = %s
+        ORDER BY college_code;
       """
 
       try:
@@ -126,7 +129,8 @@ class College:
     if conn:
       cursor = conn.cursor(dictionary=True)
       query = """
-        SELECT * FROM colleges;
+        SELECT * FROM colleges
+        ORDER BY college_code;
       """
 
       try:
