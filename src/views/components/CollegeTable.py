@@ -104,6 +104,8 @@ class CollegeTable(QtWidgets.QTableWidget):
 
     self.colleges.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
     self.populateTable()
+
+    self.searchColleges(self.parentWidget.searchBarLineEdit.text())
   
   def setColleges(self, newColleges):
     if newColleges is None:

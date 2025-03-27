@@ -12,7 +12,7 @@ from views.components.UpdateBatchStudentDialog import UpdateBatchStudentDialog
 class StudentTable(QtWidgets.QTableWidget):
   # Student variables
   headers = ["ID Number", "Name", "Gender", "Year Level", "Program", "College", "Operations"]
-  sortByFields = [("ID Number", "Last Name"), ("First Name", "Last Name"), ("Last Name", "First Name"), ("Gender", "Last Name"), ("Year Level", "Last Name"), ("Program Code", "Last Name"), ("college_code", "Last Name")]
+  sortByFields = [("id_number", "last_name"), ("first_name", "last_name"), ("last_name", "first_name"), ("gender", "last_name"), ("year_level", "last_name"), ("program_code", "last_name"), ("college_code", "last_name")]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -91,7 +91,7 @@ class StudentTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayStudents(self):
-    if not self.students or "ID Number" not in self.students[0]:
+    if not self.students or self.students[0] is None:
       self.setRowCount(0)
       self.statusMessageSignal.emit("No students found", 3000)
       return
@@ -102,6 +102,8 @@ class StudentTable(QtWidgets.QTableWidget):
     
     self.students.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
     self.populateTable()
+
+    self.searchStudents(self.parentWidget.searchBarLineEdit.text())
 
   def setStudents(self, newStudents):
     if newStudents is None:
@@ -115,20 +117,20 @@ class StudentTable(QtWidgets.QTableWidget):
     self.setRowCount(len(self.students))
     
     for row, student in enumerate(self.students):
-      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(student["ID Number"])))
+      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(student["id_number"])))
 
-      nameItem = QTableWidgetItem(f"{student['First Name']} {student['Last Name']}")
+      nameItem = QTableWidgetItem(f"{student['first_name']} {student['last_name']}")
       self.setItem(row, 1, nameItem)
 
-      genderItem = QTableWidgetItem(student["Gender"])
+      genderItem = QTableWidgetItem(student["gender"])
       genderItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 2, genderItem)
 
-      yearLevelItem = QTableWidgetItem(student["Year Level"])
+      yearLevelItem = QTableWidgetItem(str(student["year_level"]))
       yearLevelItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 3, yearLevelItem)
 
-      programCodeItem = QTableWidgetItem(student["Program Code"])
+      programCodeItem = QTableWidgetItem(student["program_code"])
       programCodeItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 4, programCodeItem)
 
@@ -183,16 +185,16 @@ class StudentTable(QtWidgets.QTableWidget):
 
   def addNewStudentToTable(self, studentData):
     newStudent = {
-      "ID Number": studentData[0],
-      "First Name": studentData[1],
-      "Last Name": studentData[2],
-      "Gender": studentData[3],
-      "Year Level": studentData[4],
-      "Program Code": studentData[5],
+      "id_number": studentData[0],
+      "first_name": studentData[1],
+      "last_name": studentData[2],
+      "gender": studentData[3],
+      "year_level": studentData[4],
+      "program_code": studentData[5],
       "college_code": studentData[6]
     }
 
-    if any(student["ID Number"] == newStudent["ID Number"] for student in self.students):
+    if any(student["id_number"] == newStudent["id_number"] for student in self.students):
       return
     
     self.students.append(newStudent)
@@ -204,19 +206,19 @@ class StudentTable(QtWidgets.QTableWidget):
       newStudent = {
         key: value
         for key, value in {
-          "ID Number": studentData[1],
-          "First Name": studentData[2],
-          "Last Name": studentData[3],
-          "Year Level": studentData[5],
-          "Gender": studentData[4],
-          "Program Code": studentData[6],
+          "id_number": studentData[1],
+          "first_name": studentData[2],
+          "last_name": studentData[3],
+          "year_level": studentData[5],
+          "gender": studentData[4],
+          "program_code": studentData[6],
           "college_code": studentData[7]
         }.items()
         if value is not None
       }
         
       for student in self.students:
-        if student["ID Number"] == originalIDNumber:
+        if student["id_number"] == originalIDNumber:
           student.update(newStudent)
     
     self.refreshDisplayStudents()
@@ -282,13 +284,13 @@ class StudentTable(QtWidgets.QTableWidget):
 
       for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
         student = self.students[row]
-        result = removeStudent(student["ID Number"])
+        result = removeStudent(student["id_number"])
 
         if result == "Student removed successfully.":
           self.students.pop(row)
           self.removeRow(row)
         else:
-          failedDeletions.append(student["ID Number"])
+          failedDeletions.append(student["id_number"])
 
       # Emit status message
       if failedDeletions:
@@ -298,11 +300,11 @@ class StudentTable(QtWidgets.QTableWidget):
     
     # Multiple Deletions
     else:
-      if not self.showDeleteConfirmation(self, f'{student["First Name"]} {student["Last Name"]}'):
+      if not self.showDeleteConfirmation(self, f'{student["first_name"]} {student["last_name"]}'):
         return
 
       # Remove from CSV
-      result = removeStudent(student["ID Number"])
+      result = removeStudent(student["id_number"])
 
       if result != "Student removed successfully.":
         self.statusMessageSignal.emit(result, 3000)
@@ -311,7 +313,7 @@ class StudentTable(QtWidgets.QTableWidget):
       # Find the row index of the student
       rowToRemove = -1
       for row in range(self.rowCount()):
-        if self.item(row, 0) and self.item(row, 0).text() == str(student["ID Number"]):
+        if self.item(row, 0) and self.item(row, 0).text() == str(student["id_number"]):
           rowToRemove = row
           break
 
@@ -388,3 +390,25 @@ class StudentTable(QtWidgets.QTableWidget):
           widget = operationsWidget.layout().itemAt(i).widget()
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
+  
+  def resetSearch(self):
+    for row in range(self.rowCount()):
+      self.setRowHidden(row, False)
+
+  def searchStudents(self, searchText=""):
+    if not searchText.strip():
+      self.resetSearch()
+      return
+
+    searchText = searchText.lower()
+
+    for row in range(self.rowCount()):
+      rowMatches = False
+
+      for col in range(self.columnCount()):
+        item = self.item(row, col)
+        if item and searchText in item.text().lower(): 
+          rowMatches = True
+          break
+
+      self.setRowHidden(row, not rowMatches)

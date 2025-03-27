@@ -5,8 +5,6 @@ from controllers.programControllers import searchProgramsByField
 
 from views.components.ProgramTable import ProgramTable
 from views.components.AddProgramDialog import AddProgramDialog
-from views.components.UpdateProgramDialog import UpdateProgramDialog
-
 
 class ProgramsPage(QtWidgets.QWidget):
   searchByFields = {

@@ -104,6 +104,8 @@ class ProgramTable(QtWidgets.QTableWidget):
     
     self.programs.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
     self.populateTable()
+
+    self.searchPrograms(self.parentWidget.searchBarLineEdit.text())
   
   def setPrograms(self, newPrograms):
     if newPrograms is None:
@@ -358,8 +360,6 @@ class ProgramTable(QtWidgets.QTableWidget):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
   
   def resetSearch(self):
-    self.initialProgramsToDisplay()
-    
     for row in range(self.rowCount()):
       self.setRowHidden(row, False)
 

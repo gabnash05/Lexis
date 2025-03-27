@@ -4,12 +4,15 @@ from PyQt6.QtCore import pyqtSignal, Qt
 from controllers.studentControllers import searchStudentsByField
 from views.components.StudentTable import StudentTable
 from views.components.AddStudentDialog import AddStudentDialog
-from views.components.UpdateStudentDialog import UpdateStudentDialog
-from utils.inputUtils import validateIdNumber
-
 
 class StudentsPage(QtWidgets.QWidget):
-    searchByFields = ["ID Number", "First Name", "Last Name", "Program Code", "college_code"]
+    searchByFields = {
+        "ID Number": "id_number",
+        "First Name": "first_name",
+        "Last Name": "last_name",
+        "Program Code": "program_code",
+        "College Code": "college_code"
+    }
 
     statusMessageSignal = pyqtSignal(str, int)
     enterPressedSignal = pyqtSignal()
@@ -26,12 +29,12 @@ class StudentsPage(QtWidgets.QWidget):
 
         self.addStudentButton.clicked.connect(self.openAddStudentDialog)
 
-        self.sortByComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 2000))
-        self.sortingOrderComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 2000))
+        self.sortByComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 500))
+        self.sortingOrderComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 500))
         self.sortByComboBox.currentIndexChanged.connect(self.studentTable.refreshDisplayStudents)
         self.sortingOrderComboBox.currentIndexChanged.connect(self.studentTable.refreshDisplayStudents)
 
-        self.enterPressedSignal.connect(self.searchStudents)
+        self.enterPressedSignal.connect(lambda: self.studentTable.searchStudents(self.searchBarLineEdit.text()))
 
         self.displayMessageToStatusBar("Students Page Loaded", 3000)
         
@@ -301,66 +304,8 @@ class StudentsPage(QtWidgets.QWidget):
         self.searchBarLineEdit.setAutoFillBackground(False)
         self.searchBarLineEdit.setStyleSheet("")
         self.searchBarLineEdit.setObjectName("searchBarLineEdit")
+        self.searchBarLineEdit.textChanged.connect(lambda: self.studentTable.searchStudents(self.searchBarLineEdit.text()))
         self.horizontalLayout_8.addWidget(self.searchBarLineEdit)
-
-        # Refresh Button (Initially Hidden)
-        self.refreshButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
-        self.refreshButton.setStyleSheet("background-color: rgb(37, 37, 37);")
-        self.refreshButton.setSizePolicy(sizePolicy)
-        self.refreshButton.setMinimumSize(QtCore.QSize(0, 40))
-        self.refreshButton.setMaximumSize(QtCore.QSize(16777215, 60))
-        self.refreshButton.setFont(font)
-        self.refreshButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.refreshButton.setObjectName("refreshButton")
-        self.refreshButton.setText("Refresh")
-        self.refreshButton.setVisible(False)
-        self.horizontalLayout_8.addWidget(self.refreshButton)
-
-        self.searchButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.searchButton.sizePolicy().hasHeightForWidth())
-        self.searchButton.setSizePolicy(sizePolicy)
-        self.searchButton.setMinimumSize(QtCore.QSize(0, 40))
-        self.searchButton.setMaximumSize(QtCore.QSize(16777215, 60))
-        font = QtGui.QFont()
-        font.setFamily("Inter")
-        font.setPointSize(9)
-        font.setBold(True)
-        font.setItalic(False)
-        self.searchButton.setFont(font)
-        self.searchButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.searchButton.setStyleSheet("")
-        self.searchButton.setObjectName("searchButton")
-        self.horizontalLayout_8.addWidget(self.searchButton)
-
-        self.searchButton.clicked.connect(self.searchStudents)
-        self.refreshButton.clicked.connect(self.handleRefresh)
-        
-        # searchByComboBox
-        self.searchByComboBox = QtWidgets.QComboBox(parent=self.searchBarFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.searchByComboBox.sizePolicy().hasHeightForWidth())
-
-        self.searchByComboBox.setSizePolicy(sizePolicy)
-        self.searchByComboBox.setMinimumSize(QtCore.QSize(120, 40))
-        self.searchByComboBox.setMaximumSize(QtCore.QSize(16777215, 60))
-        self.searchByComboBox.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.searchByComboBox.setToolTipDuration(0)
-
-        self.searchByComboBox.addItem("Search By")
-        self.searchByComboBox.setCurrentIndex(0) 
-
-        self.searchByComboBox.setObjectName("searchByComboBox")
-        self.searchByComboBox.addItem("")
-        self.searchByComboBox.addItem("")
-        self.searchByComboBox.addItem("")
-        self.searchByComboBox.addItem("")
-        self.searchByComboBox.addItem("")
-        self.horizontalLayout_8.addWidget(self.searchByComboBox)
 
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem2)
@@ -507,14 +452,6 @@ class StudentsPage(QtWidgets.QWidget):
         self.programsSidebarButton.setText(_translate("mainWindow", "Programs"))
         self.collegesSidebarButton.setText(_translate("mainWindow", "Colleges"))
         self.searchBarLineEdit.setPlaceholderText(_translate("mainWindow", "Search Student"))
-        self.searchButton.setText(_translate("mainWindow", "Search"))
-        self.searchByComboBox.setToolTip(_translate("mainWindow", "Search by"))
-        self.searchByComboBox.setPlaceholderText(_translate("mainWindow", "Search by"))
-        self.searchByComboBox.setItemText(1, _translate("mainWindow", "ID Number"))
-        self.searchByComboBox.setItemText(2, _translate("mainWindow", "First Name"))
-        self.searchByComboBox.setItemText(3, _translate("mainWindow", "Last Name"))
-        self.searchByComboBox.setItemText(4, _translate("mainWindow", "Program Code"))
-        self.searchByComboBox.setItemText(5, _translate("mainWindow", "college_code"))
         self.studentLabel.setText(_translate("mainWindow", "Students"))
         self.addStudentButton.setText(_translate("mainWindow", "Add Student"))
         self.sortByComboBox.setToolTip(_translate("mainWindow", "Sort by"))
@@ -529,47 +466,20 @@ class StudentsPage(QtWidgets.QWidget):
         self.sortingOrderComboBox.setItemText(0, _translate("mainWindow", "Ascending"))
         self.sortingOrderComboBox.setItemText(1, _translate("mainWindow", "Descending"))
 
-    # Display messages to custom status bar
     def displayMessageToStatusBar(self, message, duration):
         self.statusMessageSignal.emit(message, duration)
 
-    # Open Add Student Dialog
     def openAddStudentDialog(self):
         self.addDialog = AddStudentDialog(self)
         self.addDialog.studentAddedTableSignal.connect(self.studentTable.addNewStudentToTable)
         self.addDialog.studentAddedWindowSignal.connect(self.displayMessageToStatusBar)
         self.addDialog.exec()
 
-    # Search students
-    def searchStudents(self):
-        self.displayMessageToStatusBar("Searching...", 3000)
-
-        searchValue = self.searchBarLineEdit.text().strip()
-        searchField = self.searchByComboBox.currentText()
-
-        if searchValue == "":
-            students = searchStudentsByField(searchValue)
-            self.refreshButton.setVisible(False)
-        else:
-            if searchField == "Search By":
-                students = searchStudentsByField(searchValue)
-            else:
-                students = searchStudentsByField(searchValue, searchField)
-            
-            self.refreshButton.setVisible(True)
-        
-        if students:
-            self.studentTable.setStudents(students)
-        else:
-            self.statusMessageSignal.emit("No Students Found", 3000)
-            self.studentTable.setStudents([])
-
     def handleRefresh(self):
         self.searchBarLineEdit.clear()
         self.searchStudents()
         self.refreshButton.setVisible(False)
 
-    # Handle key press events
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Return:
             self.enterPressedSignal.emit()
