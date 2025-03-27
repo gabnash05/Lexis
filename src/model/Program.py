@@ -2,6 +2,7 @@ from typing import List, Dict, Any
 import utils.csvUtils as csvUtils
 from pathlib import Path
 
+from database.db import getConnection
 
 class Program:
   PROGRAM_CSV_FILEPATH = Path(__file__).parent.parent.parent / "data" / "programs.csv"
@@ -20,52 +21,213 @@ class Program:
       "College Code": self.collegeCode,
     }
   
-  # Only for initializing when the application starts
-  @staticmethod
-  def intializeProgramStorage() -> bool:
-    return csvUtils.initializeCsv(Program.PROGRAM_CSV_FILEPATH, Program.PROGRAM_HEADERS)
-  
   # Checks if Program Code already exists
   @staticmethod
   def programCodeExists(programCode: str) -> bool:
-    return csvUtils.checkIdIfExistsCsv(Program.PROGRAM_CSV_FILEPATH, programCode)
+    conn = getConnection()
+      
+    if not conn:
+      return False 
+
+    try:
+      cursor = conn.cursor()
+
+      query = "SELECT 1 FROM programs WHERE program_code = %s LIMIT 1;"
+      cursor.execute(query, (programCode,))
+
+      return cursor.fetchone() is not None
+
+    except Exception as e:
+      print(f"Program Model Error checking if program code exists: {e}")
+      return False
+
+    finally:
+      cursor.close()
+      conn.close()
 
   # Add new program
   @staticmethod
   def addNewProgram(program: Any) -> bool:
-    return csvUtils.appendRowCsv(Program.PROGRAM_CSV_FILEPATH, program.toDict())
+    conn = getConnection()
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        INSERT INTO programs (program_code, program_name, college_code)
+        VALUES (%s, %s, %s);
+      """
+      newProgram = program.toDict()
+
+      try:
+        cursor.execute(query, (newProgram["Program Code"], newProgram["Program Name"], newProgram["College Code"]))
+        conn.commit()
+
+        return cursor.rowcount > 0
+      
+      except Exception as e:
+        print(f"Program Model Error inserting program: {e}")
+        return False
+      finally:
+        cursor.close()
+        conn.close()
   
   # Get all program records
   def getAllProgramRecords() -> List[Dict[str, str]]:
-    return csvUtils.readCsv(Program.PROGRAM_CSV_FILEPATH)
+    conn = getConnection()
+    programs = []
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM programs;
+      """
+
+      try:
+        cursor.execute(query)
+
+        programs = cursor.fetchall()
+      
+      except Exception as e:
+        print(f"Program Model Error fetching all programs: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return programs
   
   # Get program record by code
   @staticmethod
   def getProgramRecordByCode(programCode: str) -> Dict[str, str]:
-    return csvUtils.getRowByIdCsv(Program.PROGRAM_CSV_FILEPATH, programCode)
-  
+    conn = getConnection()
+    program = None
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM programs WHERE program_code = %s;
+      """
+
+      try:
+        cursor.execute(query, (programCode,))
+
+        program = cursor.fetchone()
+      
+      except Exception as e:
+        print(f"Program Model Error fetching programs by code: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return program
+
   # Get program record by name
   @staticmethod
   def getProgramRecordsByName(programName: str) -> Dict[str, str]:
-    return csvUtils.getRowsByFieldCsv(Program.PROGRAM_CSV_FILEPATH, programName, Program.PROGRAM_HEADERS[1])
+    conn = getConnection()
+    program = None
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM programs WHERE program_name = %s;
+      """
+
+      try:
+        cursor.execute(query, (programName,))
+
+        program = cursor.fetchone()
+      
+      except Exception as e:
+        print(f"Program Model Error fetching program by name: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return program
   
   # Get program record by college
   @staticmethod
   def getProgramRecordsByCollege(collegeCode: str) -> List[Dict[str, str]]:
-    return csvUtils.getRowsByFieldCsv(Program.PROGRAM_CSV_FILEPATH, collegeCode, Program.PROGRAM_HEADERS[2])
+    conn = getConnection()
+    programs = None
+
+    if conn:
+      cursor = conn.cursor(dictionary=True)
+      query = """
+        SELECT * FROM programs WHERE college_code = %s;
+      """
+
+      try:
+        cursor.execute(query, (collegeCode,))
+
+        programs = cursor.fetchall()
+      
+      except Exception as e:
+        print(f"Program Model Error fetching programs by college code: {e}")
+      finally:
+        cursor.close()
+        conn.close()
+    
+    return programs
   
   # Get program record
   @staticmethod
   def updateProgramRecordByCode(programCode: str, updateData: Dict[str, str]) -> bool:
-    return csvUtils.updateRowByFieldCsv(Program.PROGRAM_CSV_FILEPATH, Program.PROGRAM_HEADERS[0], programCode, updateData)
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    setClause = ", ".join(f'{key} = %s' for key in updateData.keys())
+    values = tuple(updateData.values()) + (programCode,)
+
+    query = f"""
+      UPDATE programs
+      SET {setClause}
+      WHERE program_code = %s;
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Program Model Error updating program: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
   
   # Remove program from college
   @staticmethod
   def deleteProgramRecord(programCode: str) -> bool:
-    return csvUtils.deleteRowByFieldCsv(Program.PROGRAM_CSV_FILEPATH, Program.PROGRAM_HEADERS[0], programCode)
-  
-  # Searches for program records without a search field
-  @staticmethod
-  def searchForProgram(searchValue: str) -> List[Dict[str, str]]:
-    return csvUtils.getRowsByFieldCsv(Program.PROGRAM_CSV_FILEPATH, searchValue, None)
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    query = f"""
+      DELETE FROM programs WHERE program_code = %s;
+    """
+
+    try:
+      cursor.execute(query, (programCode,))
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Program Model Error deleting program: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
   

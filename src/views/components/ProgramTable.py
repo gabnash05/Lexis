@@ -12,8 +12,8 @@ from controllers.programControllers import removeProgram
 
 class ProgramTable(QtWidgets.QTableWidget):
   # Program variables
-  headers = ["Program Code", "Program Name", "college_code", "Operations"]
-  sortByFields = [("Program Code", "Program Name"), ("Program Name", "college_code"), ("college_code", "Program Name")]
+  headers = ["Program Code", "Program Name", "College Code", "Operations"]
+  sortByFields = [("program_code", "program_name"), ("program_name", "college_code"), ("college_code", "program_name")]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -93,7 +93,7 @@ class ProgramTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayPrograms(self):
-    if not self.programs or "Program Code" not in self.programs[0]:
+    if not self.programs or self.programs[0] is None:
       self.setRowCount(0)
       self.statusMessageSignal.emit("No programs found", 3000)
       return
@@ -108,18 +108,19 @@ class ProgramTable(QtWidgets.QTableWidget):
   def setPrograms(self, newPrograms):
     if newPrograms is None:
       print("No records to set")
-      return
+      self.programs = []  
+    else:
+      self.programs = newPrograms
 
-    self.programs = newPrograms
     self.refreshDisplayPrograms()
 
   def populateTable(self):
     self.setRowCount(len(self.programs))
     
     for row, program in enumerate(self.programs):
-      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(program["Program Code"])))
+      self.setItem(row, 0, QtWidgets.QTableWidgetItem(str(program["program_code"])))
 
-      programName = QTableWidgetItem(program["Program Name"])
+      programName = QTableWidgetItem(program["program_name"])
       self.setItem(row, 1, programName)
 
       collegeCode = QTableWidgetItem(program["college_code"])
@@ -170,12 +171,12 @@ class ProgramTable(QtWidgets.QTableWidget):
 
   def addNewProgramToTable(self, programData):
     newProgram = {
-      "Program Code": programData[0],
-      "Program Name": programData[1],
+      "program_code": programData[0],
+      "program_name": programData[1],
       "college_code": programData[2],
     }
 
-    if any(program["Program Code"] == newProgram["Program Code"] for program in self.programs):
+    if any(program["program_code"] == newProgram["program_code"] for program in self.programs):
       return
 
     self.programs.append(newProgram)
@@ -188,15 +189,15 @@ class ProgramTable(QtWidgets.QTableWidget):
       newProgram = {
         key: value
         for key, value in {
-          "Program Code": programData[1],
-          "Program Name": programData[2],
+          "program_code": programData[1],
+          "program_name": programData[2],
           "college_code": programData[3],
         }.items()
         if value is not None
       }
 
     for program in self.programs:
-      if program["Program Code"] == originalProgramCode:
+      if program["program_code"] == originalProgramCode:
         program.update(newProgram)
     
     self.refreshDisplayPrograms()
@@ -205,6 +206,7 @@ class ProgramTable(QtWidgets.QTableWidget):
     self.setRowCount(0)
     programs = getAllPrograms()
     if not programs:
+      self.programs = []
       return
     
     self.programs = programs
@@ -247,13 +249,13 @@ class ProgramTable(QtWidgets.QTableWidget):
 
       for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
         program = self.programs[row]
-        result = removeProgram(program["Program Code"])
+        result = removeProgram(program["program_code"])
 
         if result == "Program removed successfully.":
           self.programs.pop(row)
           self.removeRow(row)
         else:
-          failedDeletions.append(program["Program Code"])
+          failedDeletions.append(program["program_code"])
 
       # Emit status message
       if failedDeletions:
@@ -263,11 +265,11 @@ class ProgramTable(QtWidgets.QTableWidget):
     
     # Single Deletion
     else:
-      if not self.showDeleteConfirmation(self, program["Program Name"]):
+      if not self.showDeleteConfirmation(self, program["program_name"]):
         return
 
       # Remove from CSV
-      result = removeProgram(program["Program Code"])
+      result = removeProgram(program["program_code"])
 
       if result != "Program removed successfully.":
         self.statusMessageSignal.emit(result, 3000)
@@ -276,7 +278,7 @@ class ProgramTable(QtWidgets.QTableWidget):
       # Find the row index of the program
       rowToRemove = -1
       for row in range(self.rowCount()):
-        if self.item(row, 0) and self.item(row, 0).text() == str(program["Program Code"]):
+        if self.item(row, 0) and self.item(row, 0).text() == str(program["program_code"]):
           rowToRemove = row
           break
 
@@ -354,3 +356,27 @@ class ProgramTable(QtWidgets.QTableWidget):
           widget = operationsWidget.layout().itemAt(i).widget()
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
+  
+  def resetSearch(self):
+    self.initialProgramsToDisplay()
+    
+    for row in range(self.rowCount()):
+      self.setRowHidden(row, False)
+
+  def searchPrograms(self, searchText=""):
+    if not searchText.strip():
+      self.resetSearch()
+      return
+
+    searchText = searchText.lower()
+
+    for row in range(self.rowCount()):
+      rowMatches = False
+
+      for col in range(self.columnCount()):
+        item = self.item(row, col)
+        if item and searchText in item.text().lower(): 
+          rowMatches = True
+          break
+
+      self.setRowHidden(row, not rowMatches)

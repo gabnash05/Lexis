@@ -35,7 +35,7 @@ class College:
       return cursor.fetchone() is not None
 
     except Exception as e:
-      print(f"Error checking if college code exists: {e}")
+      print(f"College Model Error checking if college code exists: {e}")
       return False
 
     finally:
@@ -61,7 +61,7 @@ class College:
         return cursor.rowcount > 0
       
       except Exception as e:
-        print(f"Error inserting college: {e}")
+        print(f"College Model Error inserting college: {e}")
         return False
       finally:
         cursor.close()
@@ -85,7 +85,7 @@ class College:
         college = cursor.fetchone()
       
       except Exception as e:
-        print(f"Error fetching colleges by code: {e}")
+        print(f"College Model Error fetching colleges by code: {e}")
       finally:
         cursor.close()
         conn.close()
@@ -110,7 +110,7 @@ class College:
         college = cursor.fetchone()
       
       except Exception as e:
-        print(f"Error fetching colleges by name: {e}")
+        print(f"College Model Error fetching colleges by name: {e}")
       finally:
         cursor.close()
         conn.close()
@@ -135,7 +135,7 @@ class College:
         colleges = cursor.fetchall()
       
       except Exception as e:
-        print(f"Error fetching all colleges: {e}")
+        print(f"College Model Error fetching all colleges: {e}")
       finally:
         cursor.close()
         conn.close()
@@ -168,7 +168,7 @@ class College:
       return cursor.rowcount > 0
 
     except Exception as e:
-      print(f"Error updating college: {e}")
+      print(f"College Model Error updating college: {e}")
       return False
     
     finally:
@@ -196,14 +196,10 @@ class College:
       return cursor.rowcount > 0
 
     except Exception as e:
-      print(f"Error deleting college: {e}")
+      print(f"College Model Error deleting college: {e}")
       return False
     
     finally:
       cursor.close()
       conn.close()
-  
-  # Searches for college records without a search field
-  @staticmethod
-  def searchForCollege(searchValue: str) -> List[Dict[str, str]]:
-    return csvUtils.getRowsByFieldCsv(College.COLLEGE_CSV_FILEPATH, searchValue, None)
+      

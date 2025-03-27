@@ -9,7 +9,11 @@ from views.components.UpdateProgramDialog import UpdateProgramDialog
 
 
 class ProgramsPage(QtWidgets.QWidget):
-  searchByFields = ["Program Code", "Program Name", "college_code"]
+  searchByFields = {
+    "Program Code": "program_code",
+    "Program Name": "program_name",
+    "College Code": "college_code"
+  }
 
   statusMessageSignal = pyqtSignal(str, int)
   enterPressedSignal = pyqtSignal()
@@ -28,12 +32,12 @@ class ProgramsPage(QtWidgets.QWidget):
 
     self.addProgramButton.clicked.connect(self.openAddProgramDialog)
 
-    self.sortByComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 2000))
-    self.sortingOrderComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 2000))
+    self.sortByComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 500))
+    self.sortingOrderComboBox.currentIndexChanged.connect(lambda: self.statusMessageSignal.emit("Sorting...", 500))
     self.sortByComboBox.currentIndexChanged.connect(self.programTable.refreshDisplayPrograms)
     self.sortingOrderComboBox.currentIndexChanged.connect(self.programTable.refreshDisplayPrograms)
 
-    self.enterPressedSignal.connect(self.searchPrograms)
+    self.enterPressedSignal.connect(self.programTable.searchPrograms)
 
     self.displayMessageToStatusBar("Programs Page Loaded", 3000)
       
@@ -308,65 +312,8 @@ class ProgramsPage(QtWidgets.QWidget):
     self.searchBarLineEdit.setAutoFillBackground(False)
     self.searchBarLineEdit.setStyleSheet("")
     self.searchBarLineEdit.setObjectName("searchBarLineEdit")
+    self.searchBarLineEdit.textChanged.connect(lambda: self.programTable.searchPrograms(self.searchBarLineEdit.text()))
     self.horizontalLayout_8.addWidget(self.searchBarLineEdit)
-    self.searchButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
-    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Preferred)
-    sizePolicy.setHorizontalStretch(0)
-    sizePolicy.setVerticalStretch(0)
-    sizePolicy.setHeightForWidth(self.searchButton.sizePolicy().hasHeightForWidth())
-
-    # Refresh Button (Initially Hidden)
-    self.refreshButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
-    self.refreshButton.setStyleSheet("background-color: rgb(37, 37, 37);")
-    self.refreshButton.setSizePolicy(sizePolicy)
-    self.refreshButton.setMinimumSize(QtCore.QSize(0, 40))
-    self.refreshButton.setMaximumSize(QtCore.QSize(16777215, 60))
-    self.refreshButton.setFont(font)
-    self.refreshButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-    self.refreshButton.setObjectName("refreshButton")
-    self.refreshButton.setText("Refresh")
-    self.refreshButton.setVisible(False)
-    self.horizontalLayout_8.addWidget(self.refreshButton) 
-    
-    self.searchButton.setSizePolicy(sizePolicy)
-    self.searchButton.setMinimumSize(QtCore.QSize(0, 40))
-    self.searchButton.setMaximumSize(QtCore.QSize(16777215, 60))
-    font = QtGui.QFont()
-    font.setFamily("Inter")
-    font.setPointSize(9)
-    font.setBold(True)
-    font.setItalic(False)
-    self.searchButton.setFont(font)
-    self.searchButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-    self.searchButton.setStyleSheet("")
-    self.searchButton.setObjectName("searchButton")
-    self.horizontalLayout_8.addWidget(self.searchButton)
-    
-    # searchByComboBox
-    self.searchByComboBox = QtWidgets.QComboBox(parent=self.searchBarFrame)
-    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Preferred)
-    sizePolicy.setHorizontalStretch(0)
-    sizePolicy.setVerticalStretch(0)
-    sizePolicy.setHeightForWidth(self.searchByComboBox.sizePolicy().hasHeightForWidth())
-
-    self.searchByComboBox.setSizePolicy(sizePolicy)
-    self.searchByComboBox.setMinimumSize(QtCore.QSize(120, 40))
-    self.searchByComboBox.setMaximumSize(QtCore.QSize(16777215, 60))
-    self.searchByComboBox.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-    self.searchByComboBox.setToolTipDuration(0)
-
-    self.searchByComboBox.addItem("Search By")
-    self.searchByComboBox.setCurrentIndex(0) 
-    #self.searchByComboBox.model().item(0).setEnabled(False)
-
-    self.searchByComboBox.setObjectName("searchByComboBox")
-    self.searchByComboBox.addItem("")
-    self.searchByComboBox.addItem("")
-    self.searchByComboBox.addItem("")
-    self.horizontalLayout_8.addWidget(self.searchByComboBox)
-
-    self.searchButton.clicked.connect(self.searchPrograms)
-    self.refreshButton.clicked.connect(self.handleRefresh)
 
     spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
     self.horizontalLayout_8.addItem(spacerItem2)
@@ -507,19 +454,13 @@ class ProgramsPage(QtWidgets.QWidget):
     self.programsSidebarButton.setText(_translate("mainWindow", "Programs"))
     self.collegesSidebarButton.setText(_translate("mainWindow", "Colleges"))
     self.searchBarLineEdit.setPlaceholderText(_translate("mainWindow", "Search Program"))
-    self.searchButton.setText(_translate("mainWindow", "Search"))
-    self.searchByComboBox.setToolTip(_translate("mainWindow", "Search by"))
-    self.searchByComboBox.setPlaceholderText(_translate("mainWindow", "Search by"))
-    self.searchByComboBox.setItemText(1, _translate("mainWindow", "Program Code"))
-    self.searchByComboBox.setItemText(2, _translate("mainWindow", "Program Name"))
-    self.searchByComboBox.setItemText(3, _translate("mainWindow", "college_code"))
     self.programLabel.setText(_translate("mainWindow", "Programs"))
     self.addProgramButton.setText(_translate("mainWindow", "Add Program"))
     self.sortByComboBox.setToolTip(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setPlaceholderText(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setItemText(1, _translate("mainWindow", "Program Code"))
     self.sortByComboBox.setItemText(2, _translate("mainWindow", "Program Name"))
-    self.sortByComboBox.setItemText(3, _translate("mainWindow", "college_code"))
+    self.sortByComboBox.setItemText(3, _translate("mainWindow", "College Code"))
     self.sortingOrderComboBox.setItemText(0, _translate("mainWindow", "Ascending"))
     self.sortingOrderComboBox.setItemText(1, _translate("mainWindow", "Descending"))
 
@@ -531,30 +472,7 @@ class ProgramsPage(QtWidgets.QWidget):
     self.addDialog.programAddedTableSignal.connect(self.programTable.addNewProgramToTable)
     self.addDialog.programAddedWindowSignal.connect(self.displayMessageToStatusBar)
     self.addDialog.exec()
-
-  def searchPrograms(self):
-    self.displayMessageToStatusBar("Searching...", 3000)
-
-    searchValue = self.searchBarLineEdit.text().strip()
-    searchField = self.searchByComboBox.currentText()
-    
-    if searchValue == "":
-      programs = searchProgramsByField(searchValue)
-      self.refreshButton.setVisible(False)
-    else:
-      if searchField == "Search By":
-        programs = searchProgramsByField(searchValue)
-      else:
-        programs = searchProgramsByField(searchValue, searchField)
-      
-      self.refreshButton.setVisible(True)
-
-    if programs:
-      self.programTable.setPrograms(programs)
-    else:
-      self.statusMessageSignal.emit("No Programs Found", 3000)
-      self.programTable.setPrograms([])
-
+  
   def handleRefresh(self):
       self.searchBarLineEdit.clear()
       self.searchPrograms()

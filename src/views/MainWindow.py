@@ -15,17 +15,14 @@ class MainWindow(QMainWindow):
     self.setWindowIcon(QIcon("assets/LogoIcon.png"))
     self.setWindowTitle("Lexis")
 
-    # Initialize CSV storage
-    initializeAllCsv()
-
     # Create pages
     #self.studentsPage = StudentsPage()
-    #self.programsPage = ProgramsPage()
+    self.programsPage = ProgramsPage()
     self.collegesPage = CollegesPage()
 
     # Add pages to stacked widget
     #self.stackedWidget.addWidget(self.studentsPage)
-    #self.stackedWidget.addWidget(self.programsPage)
+    self.stackedWidget.addWidget(self.programsPage)
     self.stackedWidget.addWidget(self.collegesPage)
 
     self.stackedWidget.setCurrentWidget(self.collegesPage)
@@ -35,21 +32,21 @@ class MainWindow(QMainWindow):
     #self.studentsPage.collegesSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.collegesPage))
 
     #self.programsPage.studentsSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.studentsPage))
-    #self.programsPage.collegesSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.collegesPage))
+    self.programsPage.collegesSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.collegesPage))
 
     # self.collegesPage.studentsSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.studentsPage))
-    # self.collegesPage.programsSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.programsPage))
+    self.collegesPage.programsSidebarButton.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.programsPage))
 
     self.logoButton.clicked.connect(self.refreshTables)
 
     # Connect signals
     #self.studentsPage.statusMessageSignal.connect(self.handleStatusMessage)
-    #self.programsPage.statusMessageSignal.connect(self.handleStatusMessage)
+    self.programsPage.statusMessageSignal.connect(self.handleStatusMessage)
     self.collegesPage.statusMessageSignal.connect(self.handleStatusMessage)
 
-    # self.programsPage.updateTablesSignal.connect(self.studentsPage.searchStudents)
+    # self.programsPage.updateTablesSignal.connect(self.studentsPage.studentTable.searchStudents)
     # self.collegesPage.updateTablesSignal.connect(self.studentsPage.searchStudents)
-    # self.collegesPage.updateTablesSignal.connect(self.programsPage.searchPrograms)
+    self.collegesPage.updateTablesSignal.connect(self.programsPage.programTable.searchPrograms)
   
   def handleStatusMessage(self, message, duration):
     self.statusBar.showMessage(message, duration)
@@ -57,5 +54,5 @@ class MainWindow(QMainWindow):
   def refreshTables(self):
     self.handleStatusMessage("Refreshing tables...", 3000)
     #self.studentsPage.studentTable.refreshDisplayStudents()
-    #self.programsPage.programTable.refreshDisplayPrograms()
+    self.programsPage.programTable.refreshDisplayPrograms()
     self.collegesPage.collegeTable.refreshDisplayColleges()

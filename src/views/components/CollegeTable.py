@@ -108,9 +108,10 @@ class CollegeTable(QtWidgets.QTableWidget):
   def setColleges(self, newColleges):
     if newColleges is None:
       print("No records to set")
-      return
+      self.programs = []  
+    else:
+      self.programs = newColleges
 
-    self.colleges = newColleges
     self.refreshDisplayColleges()
 
   def populateTable(self):
@@ -199,6 +200,7 @@ class CollegeTable(QtWidgets.QTableWidget):
     self.setRowCount(0)
     colleges = getAllColleges()
     if not colleges:
+      self.colleges = []
       return
     
     self.colleges = colleges
@@ -349,3 +351,24 @@ class CollegeTable(QtWidgets.QTableWidget):
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
 
+  def resetSearch(self):
+    for row in range(self.rowCount()):
+      self.setRowHidden(row, False)
+
+  def searchColleges(self, searchText=""):
+    if not searchText.strip():
+      self.resetSearch()
+      return
+
+    searchText = searchText.lower()
+
+    for row in range(self.rowCount()):
+      rowMatches = False
+
+      for col in range(self.columnCount()):
+        item = self.item(row, col)
+        if item and searchText in item.text().lower(): 
+          rowMatches = True
+          break
+
+      self.setRowHidden(row, not rowMatches)
