@@ -4,14 +4,8 @@ from model.College import College
 from typing import List, Dict, Any
 from utils.inputUtils import *
 
-STUDENT_SEARCH_FIELDS = ["ID Number", "First Name", "Last Name", "Program Code", "College Code"]
+STUDENT_SEARCH_FIELDS = ["id_number", "first_name", "last_name", "program_code", "college_code"]
 
-# INITIALIZING
-def initializeAllCsv():
-  Student.intializeStudentStorage()
-  Program.intializeProgramStorage()
-
-# ADD STUDENT FORM: add a student record
 def addStudent(idNumber: str, firstName: str, lastName: str, yearLevel: str, gender: str, programCode: str, collegeCode: str) -> str:
   if not all([idNumber, firstName, lastName, gender, programCode]):
     return("Enter all required fields")
@@ -42,13 +36,9 @@ def addStudent(idNumber: str, firstName: str, lastName: str, yearLevel: str, gen
 
   return "Student added successfully." if isSuccessful else "Failed to add student."
 
-### UPDATE ###
-# add pagination
-# MAIN WINDOW: List of students display 
 def getAllStudents() -> List[Dict[str, str]]:
   return Student.getAllStudentRecords()
 
-# SEARCH BAR: Search Student by a specific field ("ID Number", "First Name", "Last Name", "Program Code", "College Code")
 def searchStudentsByField(value: str, field: str = None ) -> List[Dict[str, str]]:
   if field and field not in STUDENT_SEARCH_FIELDS:
     print("Search field not valid")
@@ -57,10 +47,6 @@ def searchStudentsByField(value: str, field: str = None ) -> List[Dict[str, str]
   if not isinstance(value, str):
     print("Search value not valid")
     return []
-  
-  # No search field
-  if field == None:
-    return Student.searchForStudent(value)
   
   if field == STUDENT_SEARCH_FIELDS[0]:
     if validateIdNumber(value):
@@ -77,24 +63,19 @@ def searchStudentsByField(value: str, field: str = None ) -> List[Dict[str, str]
   
   if field == STUDENT_SEARCH_FIELDS[4]:
     return Student.getAllStudentRecordsByCollege(value)
-
 # may be depricated
-# FILTER SEARCH: get list of all students by year level
 def getStudentsByYearLevel(yearLevel: int) -> List[Dict[str, str]]:
   if not validateYearLevel(yearLevel):
     return None
   
   return Student.getAllStudentRecordsByYearLevel(yearLevel)
-
 # may be depricated
-# FILTER SEARCH: get list of all students by gender
 def getStudentsByGender(gender: str) -> List[Dict[str, str]]:
   if not validateGender(gender):
     return None
   
   return Student.getAllStudentRecordsByGender(gender)
 
-# UPDATE STUDENT FORM: updates a student record
 def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: str, newYearLevel: int, newGender: str, newProgramCode: str, newCollegeCode: str, validateParameters: bool) -> str:
   if validateParameters:
     if newProgramCode == None:
@@ -124,12 +105,12 @@ def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: 
   updateData = {
     key: value
     for key, value in {
-      "ID Number": newIdNumber,
-      "First Name": newFirstName,
-      "Last Name": newLastName,
-      "Year Level": newYearLevel,
-      "Gender": newGender,
-      "Program Code": newProgramCode,
+      "id_number": newIdNumber,
+      "first_name": newFirstName,
+      "last_name": newLastName,
+      "year_level": newYearLevel,
+      "gender": newGender,
+      "program_code": newProgramCode,
     }.items()
     if value is not None
   }
@@ -138,7 +119,6 @@ def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: 
 
   return "Student updated successfully." if isSuccessful else "Failed to update student."
 
-# REMOVE STUDENT FORM: removes a student record
 def removeStudent(idNumber: str) -> str:
   if not validateIdNumber(idNumber):
     return("Invalid ID Number")

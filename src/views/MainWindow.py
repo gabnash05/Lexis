@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtGui import QIcon
 from PyQt6 import uic
 
-from controllers.studentControllers import initializeAllCsv
 from views.pages.StudentsPage import StudentsPage
 from views.pages.ProgramsPage import ProgramsPage 
 from views.pages.CollegesPage import CollegesPage
