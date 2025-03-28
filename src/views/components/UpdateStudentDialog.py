@@ -65,7 +65,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
 
     self.yearLevelInput = QtWidgets.QComboBox(self)
     self.yearLevelInput.addItems(["1", "2", "3", "4", "5"])
-    self.yearLevelInput.setCurrentText(studentData[3])
+    self.yearLevelInput.setCurrentText(str(studentData[3]))
 
     self.genderInput = QtWidgets.QComboBox(self)
     self.genderInput.addItems(["Male", "Female", "Others"])
@@ -86,12 +86,12 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
     
-    if studentData[6] != "N/A":
+    if studentData[6] != None:
       collegeIndex = collegeCodeList.index(studentData[6])
       self.collegeCodeInput.setCurrentIndex(collegeIndex)
 
       programCodeList = self.updateProgramOptions(collegeIndex)
-      if studentData[5] != "N/A":
+      if studentData[5] != None:
         programIndex = programCodeList.index(studentData[5])
         self.programCodeInput.setCurrentIndex(programIndex)
     
@@ -137,7 +137,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     formLayout.addRow(self.studentInfoLabel)
     formLayout.addRow("ID Number:", self.idInput)
     formLayout.addRow("Year Level:", self.yearLevelInput)
-    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("College Code:", self.collegeCodeInput)
     formLayout.addRow("Program Code:", self.programCodeInput)
 
     # Spacer before button
@@ -176,7 +176,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
 
     # Add new program options
     programs = searchProgramsByField(selectedCollege, "college_code")
-    programCodeList = [program["Program Code"] for program in programs]
+    programCodeList = [program["program_code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 
     return programCodeList

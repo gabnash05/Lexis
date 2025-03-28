@@ -66,7 +66,7 @@ class UpdateProgramDialog(QtWidgets.QDialog):
     collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
 
-    if programData[2] != "N/A":
+    if programData[2] != None:
       collegeIndex = collegeCodeList.index(programData[2])
       self.collegeCodeInput.setCurrentIndex(collegeIndex)
     else:
@@ -97,8 +97,8 @@ class UpdateProgramDialog(QtWidgets.QDialog):
 
     formLayout.addRow(self.programInfoLabel)
     formLayout.addRow("Program Code:", self.programCodeInput)
-    formLayout.addRow("Name:", self.programNameInput)
-    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("Program Name:", self.programNameInput)
+    formLayout.addRow("College Code:", self.collegeCodeInput)
     formLayout.addRow(QtWidgets.QLabel(""))
 
     # Spacer before button

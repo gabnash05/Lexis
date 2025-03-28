@@ -134,8 +134,8 @@ class StudentTable(QtWidgets.QTableWidget):
       programCodeItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
       self.setItem(row, 4, programCodeItem)
 
-      if student["college_code"] is None:
-        student["college_code"] = "N/A"
+      # if student["college_code"] is None:
+      #   student["college_code"] = ""
       
       collegeCodeItem = QTableWidgetItem(student["college_code"])
       collegeCodeItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -271,7 +271,7 @@ class StudentTable(QtWidgets.QTableWidget):
     selectedRows = sorted(set(index.row() for index in self.selectedIndexes()), reverse=True)
     selectedRowCount = len(selectedRows)
 
-    # Single Deletion
+    # Multiple Deletions
     if len(selectedRows) > 1:
       studentNames = f'\n{"\n".join(f'{self.item(row, 1).text()}' for row in selectedRows)}'
 
@@ -298,7 +298,7 @@ class StudentTable(QtWidgets.QTableWidget):
       else:
         self.statusMessageSignal.emit("Selected students removed successfully.", 3000)
     
-    # Multiple Deletions
+    # Single Deletion
     else:
       if not self.showDeleteConfirmation(self, f'{student["first_name"]} {student["last_name"]}'):
         return

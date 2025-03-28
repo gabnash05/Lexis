@@ -80,8 +80,8 @@ class UpdateCollegeDialog(QtWidgets.QDialog):
       formLayout.addRow(QtWidgets.QLabel(""))
 
       formLayout.addRow(self.collegeInfoLabel)
-      formLayout.addRow("college_code:", self.collegeCodeInput)
-      formLayout.addRow("Name:", self.collegeNameInput)
+      formLayout.addRow("College Code:", self.collegeCodeInput)
+      formLayout.addRow("College Name:", self.collegeNameInput)
       formLayout.addRow(QtWidgets.QLabel(""))
 
       # Spacer before button

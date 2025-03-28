@@ -43,9 +43,9 @@ class MainWindow(QMainWindow):
     self.programsPage.statusMessageSignal.connect(self.handleStatusMessage)
     self.collegesPage.statusMessageSignal.connect(self.handleStatusMessage)
 
-    self.programsPage.updateTablesSignal.connect(self.studentsPage.studentTable.searchStudents)
-    self.collegesPage.updateTablesSignal.connect(self.studentsPage.studentTable.searchStudents)
-    self.collegesPage.updateTablesSignal.connect(self.programsPage.programTable.searchPrograms)
+    self.programsPage.updateTablesSignal.connect(self.studentsPage.studentTable.initialStudentsToDisplay)
+    self.collegesPage.updateTablesSignal.connect(self.studentsPage.studentTable.initialStudentsToDisplay)
+    self.collegesPage.updateTablesSignal.connect(self.programsPage.programTable.initialProgramsToDisplay)
   
   def handleStatusMessage(self, message, duration):
     self.statusBar.showMessage(message, duration)

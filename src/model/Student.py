@@ -64,7 +64,7 @@ class Student:
       newStudent = student.toDict()
 
       try:
-        cursor.execute(query, (student["ID Number"], student["First Name"], student["Last Name"], student["Year Level"], student["Gender"], student["Program Code"]))
+        cursor.execute(query, (newStudent["ID Number"], newStudent["First Name"], newStudent["Last Name"], newStudent["Year Level"], newStudent["Gender"], newStudent["Program Code"]))
         conn.commit()
 
         return cursor.rowcount > 0
@@ -114,8 +114,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         ORDER BY id_number;
       """
 
@@ -143,8 +143,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE first_name = %s
         ORDER BY id_number;
       """
@@ -173,8 +173,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE last_name = %s
         ORDER BY id_number;
       """
@@ -203,8 +203,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE year_level = %s
         ORDER BY id_number;
       """
@@ -233,8 +233,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE gender = %s
         ORDER BY id_number;
       """
@@ -263,8 +263,8 @@ class Student:
       query = """
         SELECT s.*, c.college_code 
         FROM students s 
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE program_code = %s
         ORDER BY id_number;
       """
@@ -293,8 +293,8 @@ class Student:
       query = """
         SELECT s.id_number, s.first_name, s.last_name, s.year_level, s.gender p.program_code, c.college_code
         FROM students s
-        JOIN programs p ON s.program_code = p.program_code
-        JOIN colleges c ON p.college_code = c.college_code
+        LEFT JOIN programs p ON s.program_code = p.program_code
+        LEFT JOIN colleges c ON p.college_code = c.college_code
         WHERE c.college_code = %s
         ORDER BY id_number;
       """

@@ -232,7 +232,7 @@ class CollegeTable(QtWidgets.QTableWidget):
     selectedRows = sorted(set(index.row() for index in self.selectedIndexes()), reverse=True)
     selectedRowCount = len(selectedRows)
 
-    # Single Deletion
+    # Multiple Deletions
     if len(selectedRows) > 1:
       collegeCodes = f'\n{"\n".join(f'{self.item(row, 0).text()}' for row in selectedRows)}'
 
@@ -259,7 +259,7 @@ class CollegeTable(QtWidgets.QTableWidget):
       else:
         self.statusMessageSignal.emit("Selected colleges removed successfully.", 3000)
     
-    # Multiple Deletions
+    # Single Deletion
     else:
       if not self.showDeleteConfirmation(self, college["college_name"]):
         return

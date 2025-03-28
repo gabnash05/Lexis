@@ -6,7 +6,6 @@ from src.database.db import initDatabase
 
 if __name__ == "__main__":
   initDatabase()
-
   app = QApplication(sys.argv)
   window = MainWindow()
   window.show()

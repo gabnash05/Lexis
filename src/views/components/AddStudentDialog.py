@@ -122,7 +122,7 @@ class AddStudentDialog(QtWidgets.QDialog):
     formLayout.addRow(self.studentInfoLabel)
     formLayout.addRow("ID Number:", self.idInput)
     formLayout.addRow("Year Level:", self.yearLevelInput)
-    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("College Code:", self.collegeCodeInput)
     formLayout.addRow("Program Code:", self.programCodeInput)
 
     # Add vertical spacer to create a gap before the button
@@ -191,7 +191,7 @@ class AddStudentDialog(QtWidgets.QDialog):
 
     # Add new program options
     programs = searchProgramsByField(selectedCollege, "college_code")
-    programCodeList = [program["Program Code"] for program in programs]
+    programCodeList = [program["program_code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 
   def showStatusMessage(self, message):

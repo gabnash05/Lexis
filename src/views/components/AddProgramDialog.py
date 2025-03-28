@@ -93,7 +93,7 @@ class AddProgramDialog(QtWidgets.QDialog):
     formLayout.addRow(self.programInfoLabel)
     formLayout.addRow("Program Code:", self.programCodeInput)
     formLayout.addRow("Program Name:", self.programNameInput)
-    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("College Code:", self.collegeCodeInput)
 
     # Add vertical spacer to create a gap before the button
     verticalSpacer = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
