@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
-from controllers.collegeControllers import getAllColleges, updateCollege
+from controllers.collegeControllers import updateCollege
 
 class UpdateCollegeDialog(QtWidgets.QDialog):
    collegeUpdatedTableSignal = QtCore.pyqtSignal(list)
