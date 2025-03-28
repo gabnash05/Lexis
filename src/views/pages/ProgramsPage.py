@@ -35,6 +35,7 @@ class ProgramsPage(QtWidgets.QWidget):
     self.sortByComboBox.currentIndexChanged.connect(self.programTable.refreshDisplayPrograms)
     self.sortingOrderComboBox.currentIndexChanged.connect(self.programTable.refreshDisplayPrograms)
 
+    self.searchByComboBox.currentIndexChanged.connect(lambda: self.programTable.searchPrograms(self.searchBarLineEdit.text()))
     self.enterPressedSignal.connect(self.programTable.searchPrograms)
 
     self.displayMessageToStatusBar("Programs Page Loaded", 3000)
@@ -313,6 +314,30 @@ class ProgramsPage(QtWidgets.QWidget):
     self.searchBarLineEdit.textChanged.connect(lambda: self.programTable.searchPrograms(self.searchBarLineEdit.text()))
     self.horizontalLayout_8.addWidget(self.searchBarLineEdit)
 
+    # searchByComboBox
+    self.searchByComboBox = QtWidgets.QComboBox(parent=self.searchBarFrame)
+    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Preferred)
+    sizePolicy.setHorizontalStretch(0)
+    sizePolicy.setVerticalStretch(0)
+    sizePolicy.setHeightForWidth(self.searchByComboBox.sizePolicy().hasHeightForWidth())
+
+    self.searchByComboBox.setSizePolicy(sizePolicy)
+    self.searchByComboBox.setMinimumSize(QtCore.QSize(120, 40))
+    self.searchByComboBox.setMaximumSize(QtCore.QSize(16777215, 60))
+    self.searchByComboBox.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    self.searchByComboBox.setToolTipDuration(0)
+
+    self.searchByComboBox.addItem("Search By")
+    self.searchByComboBox.setCurrentIndex(0) 
+    self.searchByComboBox.model().item(0).setEnabled(False)
+
+    self.searchByComboBox.setObjectName("searchByComboBox")
+    self.searchByComboBox.addItem("")
+    self.searchByComboBox.addItem("")
+    self.searchByComboBox.addItem("")
+    self.searchByComboBox.addItem("")
+    self.horizontalLayout_8.addWidget(self.searchByComboBox)
+
     spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
     self.horizontalLayout_8.addItem(spacerItem2)
     self.horizontalLayout_8.setStretch(0, 8)
@@ -454,6 +479,10 @@ class ProgramsPage(QtWidgets.QWidget):
     self.searchBarLineEdit.setPlaceholderText(_translate("mainWindow", "Search Program"))
     self.programLabel.setText(_translate("mainWindow", "Programs"))
     self.addProgramButton.setText(_translate("mainWindow", "Add Program"))
+    self.searchByComboBox.setItemText(1, _translate("mainWindow", "Any"))
+    self.searchByComboBox.setItemText(2, _translate("mainWindow", "Program Code"))
+    self.searchByComboBox.setItemText(3, _translate("mainWindow", "Program Name"))
+    self.searchByComboBox.setItemText(4, _translate("mainWindow", "College Code"))
     self.sortByComboBox.setToolTip(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setPlaceholderText(_translate("mainWindow", "Sort by"))
     self.sortByComboBox.setItemText(1, _translate("mainWindow", "Program Code"))

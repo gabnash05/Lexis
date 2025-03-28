@@ -361,16 +361,26 @@ class CollegeTable(QtWidgets.QTableWidget):
     if not searchText.strip():
       self.resetSearch()
       return
+    
+    searchIndex = self.parentWidget.searchByComboBox.currentIndex()
 
     searchText = searchText.lower()
 
     for row in range(self.rowCount()):
       rowMatches = False
 
-      for col in range(self.columnCount()):
-        item = self.item(row, col)
-        if item and searchText in item.text().lower(): 
-          rowMatches = True
-          break
+      if searchIndex < 2:
+        for col in range(self.columnCount()):
+          item = self.item(row, col)
+          if item and searchText in item.text().lower(): 
+            rowMatches = True
+            break
+      
+      else:
+        col = searchIndex - 2
+        if 0 <= col < self.columnCount():
+          item = self.item(row, col)
+          if item and searchText in item.text().lower(): 
+            rowMatches = True
 
       self.setRowHidden(row, not rowMatches)
