@@ -85,7 +85,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     formLayout.addRow("Students:", self.idLabel)
     formLayout.addRow("Year Level:", self.yearLevelInput)
     formLayout.addRow("Gender:", self.genderInput)
-    formLayout.addRow("college_code:", self.collegeCodeInput)
+    formLayout.addRow("College Code:", self.collegeCodeInput)
     formLayout.addRow("Program Code:", self.programCodeInput)
 
     # Update Button
@@ -116,7 +116,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
   def updateProgramOptions(self):
     selectedCollege = self.collegeCodeInput.currentText()
     programs = searchProgramsByField(selectedCollege, "college_code")
-    programCodeList = [program["Program Code"] for program in programs]
+    programCodeList = [program["program_code"] for program in programs]
 
     self.programCodeInput.clear()
     self.programCodeInput.addItems(programCodeList)
