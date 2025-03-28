@@ -335,7 +335,7 @@ class Student:
       cursor.execute(query, values)
       conn.commit()
 
-      return cursor.rowcount > 0
+      return cursor.rowcount >= 0
 
     except Exception as e:
       print(f"Student Model Error updating student: {e}")

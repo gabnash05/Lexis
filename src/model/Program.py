@@ -199,7 +199,9 @@ class Program:
       cursor.execute(query, values)
       conn.commit()
 
-      return cursor.rowcount > 0
+      print(updateData)
+
+      return cursor.rowcount >= 0
 
     except Exception as e:
       print(f"Program Model Error updating program: {e}")
