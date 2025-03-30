@@ -1,7 +1,7 @@
 from model.Student import Student
 from model.Program import Program
 from model.College import College
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from utils.inputUtils import *
 
 STUDENT_SEARCH_FIELDS = ["id_number", "first_name", "last_name", "program_code", "college_code"]
@@ -36,45 +36,8 @@ def addStudent(idNumber: str, firstName: str, lastName: str, yearLevel: str, gen
 
   return "Student added successfully." if isSuccessful else "Failed to add student."
 
-def getAllStudents() -> List[Dict[str, str]]:
-  return Student.getAllStudentRecords()
-
-def searchStudentsByField(value: str, field: str = None ) -> List[Dict[str, str]]:
-  if field and field not in STUDENT_SEARCH_FIELDS:
-    print("Search field not valid")
-    return []
-  
-  if not isinstance(value, str):
-    print("Search value not valid")
-    return []
-  
-  if field == STUDENT_SEARCH_FIELDS[0]:
-    if validateIdNumber(value):
-      return [Student.getStudentRecord(value)]
-  
-  if field == STUDENT_SEARCH_FIELDS[1]:
-    return Student.getAllStudentRecordsByFirstName(value)
-    
-  if field == STUDENT_SEARCH_FIELDS[2]:
-    return Student.getAllStudentRecordsByLastName(value)
-  
-  if field == STUDENT_SEARCH_FIELDS[3]:
-    return Student.getAllStudentRecordsByProgram(value)
-  
-  if field == STUDENT_SEARCH_FIELDS[4]:
-    return Student.getAllStudentRecordsByCollege(value)
-# may be depricated
-def getStudentsByYearLevel(yearLevel: int) -> List[Dict[str, str]]:
-  if not validateYearLevel(yearLevel):
-    return None
-  
-  return Student.getAllStudentRecordsByYearLevel(yearLevel)
-# may be depricated
-def getStudentsByGender(gender: str) -> List[Dict[str, str]]:
-  if not validateGender(gender):
-    return None
-  
-  return Student.getAllStudentRecordsByGender(gender)
+def getStudents(page=1, perPage=50, sortBy1="id_number", sortBy2="last_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
+  return Student.getStudentRecords(page, perPage, sortBy1, sortBy2, sortOrder, searchField, searchTerm)
 
 def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: str, newYearLevel: int, newGender: str, newProgramCode: str, newCollegeCode: str, validateParameters: bool) -> str:
   if validateParameters:

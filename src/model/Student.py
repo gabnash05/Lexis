@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from pathlib import Path
 
 from database.db import getConnection
@@ -101,36 +101,87 @@ class Student:
     
     return student
   
-  #TODO: UPDATE
-  # Add pagination
-  # Get all student records
+  # Get student records with page, search value, and sorting order
   @staticmethod
-  def getAllStudentRecords() -> List[Dict[str, str]]:
+  def getStudentRecords(page=1, perPage=50, sortBy1="id_number", sortBy2="last_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
     conn = getConnection()
-    programs = []
 
-    if conn:
-      cursor = conn.cursor(dictionary=True)
-      query = """
-        SELECT s.*, c.college_code 
-        FROM students s 
-        LEFT JOIN programs p ON s.program_code = p.program_code
-        LEFT JOIN colleges c ON p.college_code = c.college_code
-        ORDER BY id_number;
-      """
-
-      try:
-        cursor.execute(query)
-
-        programs = cursor.fetchall()
-      
-      except Exception as e:
-        print(f"Student Model Error fetching all students: {e}")
-      finally:
-        cursor.close()
-        conn.close()
+    if not conn:
+      return [], 0
     
-    return programs
+    cursor = conn.cursor(dictionary=True)
+    
+    params = []
+    programs = []
+    offset = (page - 1) * perPage
+    searchTerms = searchTerm.split()
+    searchQuery = "WHERE ("
+
+    
+    if searchField:
+      searchQuery += f"s.{searchField} LIKE %s"
+      params.append(f"%{searchTerm}%")
+    else:
+      searchQuery += """
+        s.id_number LIKE %s 
+        OR s.first_name LIKE %s
+        OR s.last_name LIKE %s
+        OR s.year_level LIKE %s
+        OR s.gender LIKE %s
+        OR s.program_code LIKE %s
+        OR c.college_code LIKE %s
+      """
+      params.extend([f"%{searchTerm}%"] * 7)
+    
+    for term in searchTerms:
+      searchQuery += """
+        OR s.first_name LIKE %s
+        OR s.last_name LIKE %s
+      """
+      params.extend([f"%{term}%", f"%{term}%"])  # Match each word
+
+    searchQuery += ")"
+
+    # Query to get the total count of matching records
+    countQuery = f"""
+      SELECT COUNT(*) as total 
+      FROM students s 
+      LEFT JOIN programs p ON s.program_code = p.program_code
+      LEFT JOIN colleges c ON p.college_code = c.college_code
+      {searchQuery}
+    """
+
+    try:
+      cursor.execute(countQuery, params)
+      totalRecords = cursor.fetchone()["total"]
+    except Exception as e:
+      print(f"Student Model Error fetching student count: {e}")
+      totalRecords = 0
+
+    # Query to fetch paginated student records
+    query = f"""
+      SELECT s.*, c.college_code 
+      FROM students s 
+      LEFT JOIN programs p ON s.program_code = p.program_code
+      LEFT JOIN colleges c ON p.college_code = c.college_code
+      {searchQuery}
+      ORDER BY {sortBy1} {sortOrder}, {sortBy2} ASC
+      LIMIT %s OFFSET %s
+    """
+
+    params.extend([perPage, offset])
+
+    try:
+      cursor.execute(query, params)
+      programs = cursor.fetchall()
+    except Exception as e:
+      print(f"Student Model Error fetching all students: {e}")
+    finally:
+      cursor.close()
+      conn.close()
+    
+    return programs, totalRecords
+
   
   # Get all student records by first name
   @staticmethod
@@ -372,4 +423,4 @@ class Student:
     finally:
       cursor.close()
       conn.close()
-  
+

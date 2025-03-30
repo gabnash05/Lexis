@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QGraphicsOpacityEffect, QTableWidgetItem
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QIcon
 
-from controllers.studentControllers import getAllStudents, removeStudent
+from controllers.studentControllers import getStudents, removeStudent
 from views.components.UpdateStudentDialog import UpdateStudentDialog
 from views.components.UpdateBatchStudentDialog import UpdateBatchStudentDialog
 
@@ -13,6 +13,7 @@ class StudentTable(QtWidgets.QTableWidget):
   # Student variables
   headers = ["ID Number", "Name", "Gender", "Year Level", "Program", "College", "Operations"]
   sortByFields = [("id_number", "last_name"), ("first_name", "last_name"), ("last_name", "first_name"), ("gender", "last_name"), ("year_level", "last_name"), ("program_code", "last_name"), ("college_code", "last_name")]
+  searchByFields = ["id_number", "first_name", "last_name", "gender", "year_level", "program_code", "college_code"]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -77,8 +78,9 @@ class StudentTable(QtWidgets.QTableWidget):
                         QLabel { border: none; background: transparent; font: 9pt "Inter"; }
                       """)
     
-    self.verticalHeader().setDefaultSectionSize(40)  # Increase row height
+    self.verticalHeader().setDefaultSectionSize(40)
     self.verticalHeader().setFixedWidth(35)
+    self.verticalHeader().setVisible(False)
     self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
     
     header = self.horizontalHeader()
@@ -91,26 +93,37 @@ class StudentTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayStudents(self):
-    if not self.students or self.students[0] is None:
-      self.setRowCount(0)
-      self.statusMessageSignal.emit("No students found", 3000)
-      return
-    
+    self.setRowCount(0)
     self.updateSortByIndex()
     primaryField, secondaryField = self.sortByFields[self.sortByIndex]
-    reverseOrder = (self.sortingOrder == 1)
+    sortingOrder = "ASC" if self.sortingOrder == 0 else "DESC"
     
-    self.students.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
+    searchField = None
+    searchValue = ""
+
+    if self.parentWidget.isSearchActive:
+      searchIndex = self.parentWidget.searchByComboBox.currentIndex()
+      if searchIndex > 1:
+        searchField = self.searchByFields[searchIndex]
+      searchValue = self.parentWidget.searchBarLineEdit.text()
+
+    page = self.parentWidget.page
+
+    students, totalCount = getStudents(page=page, sortBy1=primaryField, sortBy2=secondaryField, sortOrder=sortingOrder, searchField=searchField, searchTerm=searchValue)
+    self.students = students
+    
+    lastPage = (totalCount + 50 - 1) // 50
+    self.parentWidget.lastPage = lastPage
+
     self.populateTable()
 
-    self.searchStudents(self.parentWidget.searchBarLineEdit.text())
-
-  def setStudents(self, newStudents):
-    if newStudents is None:
-      print("No records to set")
+  def initialStudentsToDisplay(self):
+    self.setRowCount(0)
+    students = getStudents()
+    if not students:
       return
     
-    self.students = newStudents
+    self.students = students
     self.refreshDisplayStudents()
 
   def populateTable(self):
@@ -180,55 +193,6 @@ class StudentTable(QtWidgets.QTableWidget):
 
     self.viewport().installEventFilter(self)
 
-  def addNewStudentToTable(self, studentData):
-    newStudent = {
-      "id_number": studentData[0],
-      "first_name": studentData[1],
-      "last_name": studentData[2],
-      "gender": studentData[3],
-      "year_level": studentData[4],
-      "program_code": studentData[5],
-      "college_code": studentData[6]
-    }
-
-    if any(student["id_number"] == newStudent["id_number"] for student in self.students):
-      return
-    
-    self.students.append(newStudent)
-    self.refreshDisplayStudents()
-
-  def editStudentsInTable(self, studentsData):
-    for studentData in studentsData:
-      originalIDNumber = studentData[0]
-      newStudent = {
-        key: value
-        for key, value in {
-          "id_number": studentData[1],
-          "first_name": studentData[2],
-          "last_name": studentData[3],
-          "year_level": studentData[5],
-          "gender": studentData[4],
-          "program_code": studentData[6],
-          "college_code": studentData[7]
-        }.items()
-        if value is not None
-      }
-        
-      for student in self.students:
-        if student["id_number"] == originalIDNumber:
-          student.update(newStudent)
-    
-    self.refreshDisplayStudents()
-
-  def initialStudentsToDisplay(self):
-    self.setRowCount(0)
-    students = getAllStudents()
-    if not students:
-      return
-    
-    self.students = students
-    self.refreshDisplayStudents()
-
   def updateSortByIndex(self):
     sortByIndex = self.parentWidget.sortByComboBox.currentIndex()
     sortingOrder = self.parentWidget.sortingOrderComboBox.currentIndex()
@@ -241,7 +205,7 @@ class StudentTable(QtWidgets.QTableWidget):
     if not selectedRows or len(selectedRows) == 1:
       studentData = list(studentRowData.values())
       self.updateDialog = UpdateStudentDialog(self, studentData)
-      self.updateDialog.studentUpdatedTableSignal.connect(self.editStudentsInTable)
+      self.updateDialog.studentUpdatedTableSignal.connect(self.refreshDisplayStudents)
       self.updateDialog.statusMessageSignal.connect(self.parentWidget.displayMessageToStatusBar)
       self.updateDialog.exec()
       return
@@ -260,7 +224,7 @@ class StudentTable(QtWidgets.QTableWidget):
     ]
 
     self.updateDialog = UpdateBatchStudentDialog(self, studentsData)
-    self.updateDialog.studentUpdatedTableSignal.connect(self.editStudentsInTable)
+    self.updateDialog.studentUpdatedTableSignal.connect(self.refreshDisplayStudents)
     self.updateDialog.statusMessageSignal.connect(self.parentWidget.displayMessageToStatusBar)
     self.updateDialog.exec()
 
@@ -388,34 +352,3 @@ class StudentTable(QtWidgets.QTableWidget):
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
   
-  def resetSearch(self):
-    for row in range(self.rowCount()):
-      self.setRowHidden(row, False)
-
-  def searchStudents(self, searchText=""):
-    if not searchText.strip():
-      self.resetSearch()
-      return
-    
-    searchIndex = self.parentWidget.searchByComboBox.currentIndex()
-
-    searchText = searchText.lower()
-
-    for row in range(self.rowCount()):
-      rowMatches = False
-
-      if searchIndex < 2:
-        for col in range(self.columnCount()):
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-            break
-
-      else:
-        col = searchIndex - 2
-        if 0 <= col < self.columnCount():
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-
-      self.setRowHidden(row, not rowMatches)
