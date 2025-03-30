@@ -105,7 +105,7 @@ class StudentTable(QtWidgets.QTableWidget):
       searchIndex = self.parentWidget.searchByComboBox.currentIndex()
       if searchIndex > 1:
         searchField = self.searchByFields[searchIndex]
-      searchValue = self.parentWidget.searchBarLineEdit.text()
+      searchValue = self.parentWidget.searchBarLineEdit.text().strip()
 
     page = self.parentWidget.page
 
@@ -121,6 +121,7 @@ class StudentTable(QtWidgets.QTableWidget):
     self.setRowCount(0)
     students = getStudents()
     if not students:
+      self.programs = []
       return
     
     self.students = students

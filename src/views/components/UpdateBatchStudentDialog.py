@@ -1,5 +1,5 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
-from controllers.programControllers import searchProgramsByField
+from controllers.programControllers import getPrograms
 from controllers.collegeControllers import getAllColleges
 from controllers.studentControllers import updateStudent
 
@@ -115,7 +115,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
 
   def updateProgramOptions(self):
     selectedCollege = self.collegeCodeInput.currentText()
-    programs = searchProgramsByField(selectedCollege, "college_code")
+    programs = getPrograms(searchField="college_code", searchTerm=selectedCollege)
     programCodeList = [program["program_code"] for program in programs]
 
     self.programCodeInput.clear()
@@ -133,7 +133,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     programCode = self.programCodeInput.currentText() if self.programCodeInput.currentText() != "" else None
 
     if collegeCode is not None:
-      programsInCollege = searchProgramsByField(collegeCode, "college_code")
+      programsInCollege = getPrograms(searchField="college_code", searchTerm=collegeCode)
       if len(programsInCollege) == 0:
         self.showStatusMessage("Selected College has no Programs")
         return

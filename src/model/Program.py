@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from pathlib import Path
 
 from database.db import getConnection
@@ -69,32 +69,72 @@ class Program:
       finally:
         cursor.close()
         conn.close()
-  
-  # Get all program records
-  def getAllProgramRecords() -> List[Dict[str, str]]:
+
+  # Get student records with page, search value, and sorting order
+  @staticmethod
+  def getProgramRecords(page=1, perPage=50, sortBy1="program_code", sortBy2="program_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
     conn = getConnection()
-    programs = []
 
-    if conn:
-      cursor = conn.cursor(dictionary=True)
-      query = """
-        SELECT * FROM programs
-        ORDER BY program_code;
-      """
-
-      try:
-        cursor.execute(query)
-
-        programs = cursor.fetchall()
-      
-      except Exception as e:
-        print(f"Program Model Error fetching all programs: {e}")
-      finally:
-        cursor.close()
-        conn.close()
+    if not conn:
+      return [], 0
     
-    return programs
-  
+    cursor = conn.cursor(dictionary=True)
+    
+    params = []
+    programs = []
+    offset = (page - 1) * perPage
+    searchTerms = searchTerm.split()
+    searchQuery = "WHERE ("
+
+    
+    if searchField:
+      searchQuery += f"p.{searchField} LIKE %s"
+      params.append(f"%{searchTerm}%")
+    else:
+      searchQuery += """
+        p.program_code LIKE %s 
+        OR p.program_name LIKE %s
+        OR p.college_code LIKE %s
+      """
+      params.extend([f"%{searchTerm}%"] * 3)
+
+    searchQuery += ")"
+
+    # Query to get the total count of matching records
+    countQuery = f"""
+      SELECT COUNT(*) as total 
+      FROM programs p 
+      {searchQuery}
+    """
+
+    try:
+      cursor.execute(countQuery, params)
+      totalRecords = cursor.fetchone()["total"]
+    except Exception as e:
+      print(f"Program Model Error fetching program: {e}")
+      totalRecords = 0
+
+    query = f"""
+      SELECT * 
+      FROM programs p 
+      {searchQuery}
+      ORDER BY {sortBy1} {sortOrder}, {sortBy2} ASC
+      LIMIT %s OFFSET %s
+    """
+
+    params.extend([perPage, offset])
+
+    try:
+      cursor.execute(query, params)
+      programs = cursor.fetchall()
+    except Exception as e:
+      print(f"Program Model Error fetching programs: {e}")
+    finally:
+      cursor.close()
+      conn.close()
+    
+    return programs, totalRecords
+
   # Get program record by code
   @staticmethod
   def getProgramRecordByCode(programCode: str) -> Dict[str, str]:
@@ -198,8 +238,6 @@ class Program:
     try:
       cursor.execute(query, values)
       conn.commit()
-
-      print(updateData)
 
       return cursor.rowcount >= 0
 

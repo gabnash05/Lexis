@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import pyqtSignal
 
-from controllers.programControllers import searchProgramsByField
+from controllers.programControllers import getPrograms
 from controllers.collegeControllers import getAllColleges
 from controllers.studentControllers import addStudent
 
@@ -190,7 +190,7 @@ class AddStudentDialog(QtWidgets.QDialog):
     self.programCodeInput.model().item(0).setEnabled(False)
 
     # Add new program options
-    programs = searchProgramsByField(selectedCollege, "college_code")
+    programs = getPrograms(searchField="college_code", searchTerm=selectedCollege)
     programCodeList = [program["program_code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 

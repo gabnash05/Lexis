@@ -2,7 +2,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 
-from controllers.programControllers import searchProgramsByField
+from controllers.programControllers import getPrograms
 from controllers.collegeControllers import getAllColleges
 from controllers.studentControllers import updateStudent
 
@@ -175,7 +175,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.programCodeInput.clear()
 
     # Add new program options
-    programs = searchProgramsByField(selectedCollege, "college_code")
+    programs = getPrograms(searchField="college_code", searchTerm=selectedCollege)
     programCodeList = [program["program_code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 

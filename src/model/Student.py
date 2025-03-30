@@ -158,7 +158,6 @@ class Student:
       print(f"Student Model Error fetching student count: {e}")
       totalRecords = 0
 
-    # Query to fetch paginated student records
     query = f"""
       SELECT s.*, c.college_code 
       FROM students s 
@@ -182,7 +181,6 @@ class Student:
     
     return programs, totalRecords
 
-  
   # Get all student records by first name
   @staticmethod
   def getAllStudentRecordsByFirstName(firstName: str) -> List[Dict[str, str]]:

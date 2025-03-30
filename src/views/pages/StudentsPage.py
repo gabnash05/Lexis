@@ -589,7 +589,7 @@ class StudentsPage(QtWidgets.QWidget):
         self.isSearchActive = False
 
     def searchStudents(self):
-        if self.searchBarLineEdit.text():
+        if self.searchBarLineEdit.text().strip():
             self.displayMessageToStatusBar("Searching...", 3000)
             self.refreshButton.setVisible(True)
             self.page = 1

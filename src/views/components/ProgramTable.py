@@ -7,7 +7,7 @@ from PyQt6.QtGui import QIcon
 
 from views.components.UpdateProgramDialog import UpdateProgramDialog
 
-from controllers.programControllers import getAllPrograms
+from controllers.programControllers import getPrograms
 from controllers.programControllers import removeProgram
 
 class ProgramTable(QtWidgets.QTableWidget):
@@ -81,6 +81,7 @@ class ProgramTable(QtWidgets.QTableWidget):
     
     self.verticalHeader().setDefaultSectionSize(40)  # Increase row height
     self.verticalHeader().setFixedWidth(35)
+    self.verticalHeader().setVisible(False)
     self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
     
     header = self.horizontalHeader()
@@ -93,20 +94,41 @@ class ProgramTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayPrograms(self):
-    if not self.programs or self.programs[0] is None:
-      self.setRowCount(0)
-      self.statusMessageSignal.emit("No programs found", 3000)
-      return
-    
+    self.setRowCount(0)
     self.updateSortByIndex()
     primaryField, secondaryField = self.sortByFields[self.sortByIndex]
-    reverseOrder = (self.sortingOrder == 1)
+    sortingOrder = "ASC" if self.sortingOrder == 0 else "DESC"
     
-    self.programs.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
-    self.populateTable()
+    searchField = None
+    searchValue = ""
 
-    self.searchPrograms(self.parentWidget.searchBarLineEdit.text())
+    if self.parentWidget.isSearchActive:
+      searchIndex = self.parentWidget.searchByComboBox.currentIndex()
+      if searchIndex > 1:
+        searchField = self.searchByFields[searchIndex]
+      searchValue = self.parentWidget.searchBarLineEdit.text().strip()
+
+    page = self.parentWidget.page
+
+    programs, totalCount = getPrograms(page=page, sortBy1=primaryField, sortBy2=secondaryField, sortOrder=sortingOrder, searchField=searchField, searchTerm=searchValue)
+    self.programs = programs
+    
+    lastPage = (totalCount + 50 - 1) // 50
+    self.parentWidget.lastPage = lastPage
+
+    self.populateTable()
   
+  
+  def initialProgramsToDisplay(self):
+    self.setRowCount(0)
+    programs = getPrograms()
+    if not programs:
+      self.programs = []
+      return
+    
+    self.programs = programs
+    self.refreshDisplayPrograms()
+
   def setPrograms(self, newPrograms):
     if newPrograms is None:
       print("No records to set")
@@ -171,49 +193,6 @@ class ProgramTable(QtWidgets.QTableWidget):
 
     self.viewport().installEventFilter(self)
 
-  def addNewProgramToTable(self, programData):
-    newProgram = {
-      "program_code": programData[0],
-      "program_name": programData[1],
-      "college_code": programData[2],
-    }
-
-    if any(program["program_code"] == newProgram["program_code"] for program in self.programs):
-      return
-
-    self.programs.append(newProgram)
-    self.refreshDisplayPrograms()
-
-  def editProgramInTable(self, programsData):
-    for programData in programsData:
-      originalProgramCode = programData[0]
-
-      newProgram = {
-        key: value
-        for key, value in {
-          "program_code": programData[1],
-          "program_name": programData[2],
-          "college_code": programData[3],
-        }.items()
-        if value is not None
-      }
-
-    for program in self.programs:
-      if program["program_code"] == originalProgramCode:
-        program.update(newProgram)
-    
-    self.refreshDisplayPrograms()
-
-  def initialProgramsToDisplay(self):
-    self.setRowCount(0)
-    programs = getAllPrograms()
-    if not programs:
-      self.programs = []
-      return
-    
-    self.programs = programs
-    self.refreshDisplayPrograms()
-
   def updateSortByIndex(self):
     sortByIndex = self.parentWidget.sortByComboBox.currentIndex()
     sortingOrder = self.parentWidget.sortingOrderComboBox.currentIndex()
@@ -225,7 +204,7 @@ class ProgramTable(QtWidgets.QTableWidget):
     selectedRows = list(set(index.row() for index in self.selectedIndexes()))
     programData = list(programRowData.values())
     self.updateDialog = UpdateProgramDialog(self, programData)
-    self.updateDialog.programUpdatedTableSignal.connect(self.editProgramInTable)
+    self.updateDialog.programUpdatedTableSignal.connect(self.refreshDisplayPrograms)
     self.updateDialog.updateTablesSignal.connect(self.updateTablesSignal)
     self.updateDialog.statusMessageSignal.connect(self.parentWidget.displayMessageToStatusBar)
 
@@ -358,35 +337,3 @@ class ProgramTable(QtWidgets.QTableWidget):
           widget = operationsWidget.layout().itemAt(i).widget()
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
-  
-  def resetSearch(self):
-    for row in range(self.rowCount()):
-      self.setRowHidden(row, False)
-
-  def searchPrograms(self, searchText=""):
-    if not searchText.strip():
-      self.resetSearch()
-      return
-    
-    searchIndex = self.parentWidget.searchByComboBox.currentIndex()
-
-    searchText = searchText.lower()
-
-    for row in range(self.rowCount()):
-      rowMatches = False
-
-      if searchIndex < 2:
-        for col in range(self.columnCount()):
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-            break
-      
-      else:
-        col = searchIndex - 2
-        if 0 <= col < self.columnCount():
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-
-      self.setRowHidden(row, not rowMatches)

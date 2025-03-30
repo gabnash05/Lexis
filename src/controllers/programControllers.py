@@ -1,6 +1,6 @@
 from model.Program import Program
 from model.College import College
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from utils.inputUtils import *
 
 PROGRAM_SEARCH_FIELDS = ["program_code", "program_name", "college_code"]
@@ -20,26 +20,8 @@ def addProgram(programCode: str, programName: str, collegeCode: str) -> bool:
 
   return "Program added successfully." if isSuccessful else "Failed to add program."
 
-def getAllPrograms() -> List[Dict[str, str]]:
-  return Program.getAllProgramRecords()
-
-def searchProgramsByField(value: str, field: str = None) -> List[Dict[str, str]]:
-  if field and field not in PROGRAM_SEARCH_FIELDS:
-    print("Search field not valid")
-    return []
-  
-  if not isinstance(value, str):
-    print("Search value not valid")
-    return []
-  
-  if field == PROGRAM_SEARCH_FIELDS[0]:
-    return [Program.getProgramRecordByCode(value)]
-  
-  if field == PROGRAM_SEARCH_FIELDS[1]:
-    return Program.getProgramRecordsByName(value)
-    
-  if field == PROGRAM_SEARCH_FIELDS[2]:
-    return Program.getProgramRecordsByCollege(value)
+def getPrograms(page=1, perPage=50, sortBy1="program_code", sortBy2="program_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
+  return Program.getProgramRecords(page, perPage, sortBy1, sortBy2, sortOrder, searchField, searchTerm)
 
 def updateProgram(originalProgramCode: str, newProgramCode: Any, newProgramName: Any, newCollegeCode: Any) -> bool:
   
