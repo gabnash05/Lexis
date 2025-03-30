@@ -3,7 +3,7 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 
 from controllers.programControllers import getPrograms
-from controllers.collegeControllers import getAllColleges
+from controllers.collegeControllers import getColleges
 from controllers.studentControllers import updateStudent
 
 class UpdateStudentDialog(QtWidgets.QDialog):
@@ -82,7 +82,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.programCodeInput = QtWidgets.QComboBox(self)
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
-    colleges = getAllColleges()
+    colleges, _ = getColleges()
     collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
     
@@ -175,7 +175,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.programCodeInput.clear()
 
     # Add new program options
-    programs = getPrograms(searchField="college_code", searchTerm=selectedCollege)
+    programs, _ = getPrograms(searchField="college_code", searchTerm=selectedCollege)
     programCodeList = [program["program_code"] for program in programs]
     self.programCodeInput.addItems(programCodeList)
 

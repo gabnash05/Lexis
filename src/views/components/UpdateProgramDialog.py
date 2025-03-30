@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 
 from controllers.programControllers import updateProgram
-from controllers.collegeControllers import getAllColleges
+from controllers.collegeControllers import getColleges
 
 class UpdateProgramDialog(QtWidgets.QDialog):
   programUpdatedTableSignal = QtCore.pyqtSignal(list)
@@ -62,7 +62,7 @@ class UpdateProgramDialog(QtWidgets.QDialog):
 
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
-    colleges = getAllColleges()
+    colleges, _ = getColleges()
     collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems(collegeCodeList)
 

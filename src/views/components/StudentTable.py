@@ -119,7 +119,7 @@ class StudentTable(QtWidgets.QTableWidget):
 
   def initialStudentsToDisplay(self):
     self.setRowCount(0)
-    students = getStudents()
+    students, _ = getStudents()
     if not students:
       self.programs = []
       return

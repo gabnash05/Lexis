@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import pyqtSignal
 
-from controllers.collegeControllers import getAllColleges
+from controllers.collegeControllers import getColleges
 from controllers.programControllers import addProgram
 
 class AddProgramDialog(QtWidgets.QDialog):
@@ -57,7 +57,7 @@ class AddProgramDialog(QtWidgets.QDialog):
 
     # Getting all college_codes
     self.collegeCodeInput.addItems(["Select College"])
-    colleges = getAllColleges()
+    colleges, _ = getColleges()
     collegeCodeList = [college["college_code"] for college in colleges]
 
     self.collegeCodeInput.addItems(collegeCodeList)

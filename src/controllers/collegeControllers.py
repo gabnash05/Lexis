@@ -1,5 +1,5 @@
 from model.College import College
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from utils.inputUtils import *
 
 COLLEGE_SEARCH_FIELDS = ["college_code", "college_name"]
@@ -16,23 +16,8 @@ def addCollege(collegeCode: str, collegeName: str) -> bool:
 
   return "College added successfully." if isSuccessful else "Failed to add college."
 
-def getAllColleges() -> List[Dict[str, str]]:
-  return College.getAllCollegeRecords()
-
-def searchCollegesByField(value: str, field: str = None) -> List[Dict[str, str]]:
-  if field and field not in COLLEGE_SEARCH_FIELDS:
-    print("Search field not valid")
-    return []
-  
-  if not isinstance(value, str):
-    print("Search value not valid")
-    return []
-
-  if field == COLLEGE_SEARCH_FIELDS[0]:
-    return [College.getCollegeRecordByCode(value)]
-  
-  if field == COLLEGE_SEARCH_FIELDS[1]:
-    return College.getCollegeRecordByName(value)
+def getColleges(page=1, perPage=50, sortBy1="college_code", sortBy2="college_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
+  return College.getCollegeRecords(page, perPage, sortBy1, sortBy2, sortOrder, searchField, searchTerm)
 
 def updateCollege(originalCollegeCode: str, newCollegeCode: Any, newCollegeName: Any) -> bool:
 

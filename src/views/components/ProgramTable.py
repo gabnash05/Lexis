@@ -118,10 +118,9 @@ class ProgramTable(QtWidgets.QTableWidget):
 
     self.populateTable()
   
-  
   def initialProgramsToDisplay(self):
     self.setRowCount(0)
-    programs = getPrograms()
+    programs, _ = getPrograms()
     if not programs:
       self.programs = []
       return

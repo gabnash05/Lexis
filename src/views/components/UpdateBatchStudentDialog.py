@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from controllers.programControllers import getPrograms
-from controllers.collegeControllers import getAllColleges
+from controllers.collegeControllers import getColleges
 from controllers.studentControllers import updateStudent
 
 class UpdateBatchStudentDialog(QtWidgets.QDialog):
@@ -75,7 +75,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     self.collegeCodeInput = QtWidgets.QComboBox(self)
     self.programCodeInput = QtWidgets.QComboBox(self)
 
-    colleges = getAllColleges()
+    colleges, _ = getColleges()
     collegeCodeList = [college["college_code"] for college in colleges]
     self.collegeCodeInput.addItems([""] + collegeCodeList)
 
@@ -115,7 +115,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
 
   def updateProgramOptions(self):
     selectedCollege = self.collegeCodeInput.currentText()
-    programs = getPrograms(searchField="college_code", searchTerm=selectedCollege)
+    programs, _ = getPrograms(searchField="college_code", searchTerm=selectedCollege)
     programCodeList = [program["program_code"] for program in programs]
 
     self.programCodeInput.clear()
@@ -133,7 +133,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
     programCode = self.programCodeInput.currentText() if self.programCodeInput.currentText() != "" else None
 
     if collegeCode is not None:
-      programsInCollege = getPrograms(searchField="college_code", searchTerm=collegeCode)
+      programsInCollege, _ = getPrograms(searchField="college_code", searchTerm=collegeCode)
       if len(programsInCollege) == 0:
         self.showStatusMessage("Selected College has no Programs")
         return

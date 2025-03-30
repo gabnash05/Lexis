@@ -1,8 +1,5 @@
-
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal, Qt
-
-from controllers.collegeControllers import searchCollegesByField
 
 from views.components.CollegeTable import CollegeTable
 from views.components.AddCollegeDialog import AddCollegeDialog
@@ -21,12 +18,19 @@ class CollegesPage(QtWidgets.QWidget):
 
   def __init__(self, parent=None):
     super().__init__(parent)
+    self.isSearchActive = False
+    self.page = 1
+    self.lastPage = 100
+
     self.setupUi()
 
     self.collegeTable = CollegeTable(self)
     self.dataFrame.layout().addWidget(self.collegeTable)
 
     # CONNECT SIGNALS
+    self.searchButton.clicked.connect(self.searchColleges)
+    self.refreshButton.clicked.connect(self.handleRefresh)
+
     self.collegeTable.statusMessageSignal.connect(self.displayMessageToStatusBar)
     self.collegeTable.updateTablesSignal.connect(self.updateTablesSignal)
 
@@ -37,10 +41,10 @@ class CollegesPage(QtWidgets.QWidget):
     self.sortByComboBox.currentIndexChanged.connect(self.collegeTable.refreshDisplayColleges)
     self.sortingOrderComboBox.currentIndexChanged.connect(self.collegeTable.refreshDisplayColleges)
 
-    self.searchByComboBox.currentIndexChanged.connect(lambda: self.collegeTable.searchColleges(self.searchBarLineEdit.text()))
-    self.spacebarPressedSignal.connect(self.collegeTable.searchColleges)
+    self.searchByComboBox.currentIndexChanged.connect(self.searchColleges)
+    self.spacebarPressedSignal.connect(self.searchColleges)
 
-    self.displayMessageToStatusBar("Programs Page Loaded", 3000)
+    self.displayMessageToStatusBar("Colleges Page Loaded", 3000)
       
   def setupUi(self):
     self.setObjectName("mainWindow")
@@ -310,8 +314,39 @@ class CollegesPage(QtWidgets.QWidget):
     self.searchBarLineEdit.setAutoFillBackground(False)
     self.searchBarLineEdit.setStyleSheet("")
     self.searchBarLineEdit.setObjectName("searchBarLineEdit")
-    self.searchBarLineEdit.textChanged.connect(lambda: self.collegeTable.searchColleges(self.searchBarLineEdit.text()))
     self.horizontalLayout_8.addWidget(self.searchBarLineEdit)
+
+    # Refresh Button
+    self.refreshButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
+    self.refreshButton.setStyleSheet("background-color: rgb(37, 37, 37);")
+    self.refreshButton.setSizePolicy(sizePolicy)
+    self.refreshButton.setMinimumSize(QtCore.QSize(0, 40))
+    self.refreshButton.setMaximumSize(QtCore.QSize(16777215, 60))
+    self.refreshButton.setFont(font)
+    self.refreshButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    self.refreshButton.setObjectName("refreshButton")
+    self.refreshButton.setText("Refresh")
+    self.refreshButton.setVisible(False)
+    self.horizontalLayout_8.addWidget(self.refreshButton)
+    
+    self.searchButton = QtWidgets.QPushButton(parent=self.searchBarFrame)
+    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Preferred)
+    sizePolicy.setHorizontalStretch(0)
+    sizePolicy.setVerticalStretch(0)
+    sizePolicy.setHeightForWidth(self.searchButton.sizePolicy().hasHeightForWidth())
+    self.searchButton.setSizePolicy(sizePolicy)
+    self.searchButton.setMinimumSize(QtCore.QSize(0, 40))
+    self.searchButton.setMaximumSize(QtCore.QSize(16777215, 60))
+    font = QtGui.QFont()
+    font.setFamily("Inter")
+    font.setPointSize(9)
+    font.setBold(True)
+    font.setItalic(False)
+    self.searchButton.setFont(font)
+    self.searchButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    self.searchButton.setStyleSheet("")
+    self.searchButton.setObjectName("searchButton")
+    self.horizontalLayout_8.addWidget(self.searchButton)
 
     # searchByComboBox
     self.searchByComboBox = QtWidgets.QComboBox(parent=self.searchBarFrame)
@@ -382,7 +417,7 @@ class CollegesPage(QtWidgets.QWidget):
     sizePolicy.setVerticalStretch(0)
     sizePolicy.setHeightForWidth(self.sortByComboBox.sizePolicy().hasHeightForWidth())
     self.sortByComboBox.setSizePolicy(sizePolicy)
-    self.sortByComboBox.setMinimumSize(QtCore.QSize(85, 40))
+    self.sortByComboBox.setMinimumSize(QtCore.QSize(95, 40))
     self.sortByComboBox.setMaximumSize(QtCore.QSize(150, 16777215))
     font = QtGui.QFont()
     font.setFamily("Inter")
@@ -419,6 +454,31 @@ class CollegesPage(QtWidgets.QWidget):
     self.horizontalLayout.addWidget(self.sortingOrderComboBox)
     spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
     self.horizontalLayout.addItem(spacerItem3)
+
+    self.prevPageButton = QtWidgets.QPushButton("<", parent=self.controlsFrame)
+    self.prevPageButton.setMaximumSize(QtCore.QSize(40, 30))
+    self.prevPageButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    self.prevPageButton.clicked.connect(self.prevPage)
+    self.horizontalLayout.addWidget(self.prevPageButton)
+
+    self.pageLabel = QtWidgets.QLabel("1", parent=self.controlsFrame)
+    self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+    self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
+    self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
+
+    font = QtGui.QFont()
+    font.setBold(True)
+    font.setPointSize(13)
+    self.pageLabel.setFont(font)
+
+    self.horizontalLayout.addWidget(self.pageLabel)
+
+    self.nextPageButton = QtWidgets.QPushButton(">", parent=self.controlsFrame)
+    self.nextPageButton.setMaximumSize(QtCore.QSize(40, 30))
+    self.nextPageButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+    self.nextPageButton.clicked.connect(self.nextPage)
+    self.horizontalLayout.addWidget(self.nextPageButton)
+
     self.horizontalLayout.setStretch(0, 1)
     self.horizontalLayout.setStretch(1, 1)
     self.horizontalLayout.setStretch(2, 2)
@@ -476,6 +536,7 @@ class CollegesPage(QtWidgets.QWidget):
     self.searchBarLineEdit.setPlaceholderText(_translate("mainWindow", "Search College"))
     self.collegeLabel.setText(_translate("mainWindow", "Colleges"))
     self.addCollegeButton.setText(_translate("mainWindow", "Add College"))
+    self.searchButton.setText(_translate("mainWindow", "Search"))
     self.searchByComboBox.setItemText(1, _translate("mainWindow", "Any"))
     self.searchByComboBox.setItemText(2, _translate("mainWindow", "College Code"))
     self.searchByComboBox.setItemText(3, _translate("mainWindow", "College Name"))
@@ -491,15 +552,38 @@ class CollegesPage(QtWidgets.QWidget):
 
   def openAddCollegeDialog(self):
     self.addDialog = AddCollegeDialog(self)
-    self.addDialog.collegeAddedTableSignal.connect(self.collegeTable.addNewCollegeToTable)
+    self.addDialog.collegeAddedTableSignal.connect(self.collegeTable.refreshDisplayColleges)
     self.addDialog.collegeAddedWindowSignal.connect(self.displayMessageToStatusBar)
     self.addDialog.exec()
-
-  def handleRefresh(self):
-    self.searchBarLineEdit.clear()
-    self.searchColleges()
-    self.refreshButton.setVisible(False)
 
   def keyPressEvent(self, event):
     if event.key() == Qt.Key.Key_Return:
       self.spacebarPressedSignal.emit()
+
+  def handleRefresh(self):
+    self.searchBarLineEdit.clear()
+    self.collegeTable.refreshDisplayColleges()
+    self.refreshButton.setVisible(False)
+    self.isSearchActive = False
+
+  def searchColleges(self):
+    if self.searchBarLineEdit.text().strip():
+      self.displayMessageToStatusBar("Searching...", 3000)
+      self.refreshButton.setVisible(True)
+      self.page = 1
+      self.pageLabel.setText(str(self.page))
+      self.isSearchActive = True
+
+    self.collegeTable.refreshDisplayColleges()
+
+  def prevPage(self):
+    if self.page > 1:
+      self.page -= 1
+      self.pageLabel.setText(str(self.page))
+      self.collegeTable.refreshDisplayColleges()
+  
+  def nextPage(self):
+    if self.page < self.lastPage:
+      self.page += 1
+      self.pageLabel.setText(str(self.page))
+      self.collegeTable.refreshDisplayColleges()

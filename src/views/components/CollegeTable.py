@@ -7,7 +7,7 @@ from PyQt6.QtGui import QIcon
 
 from views.components.UpdateCollegeDialog import UpdateCollegeDialog
 
-from controllers.collegeControllers import getAllColleges, removeCollege
+from controllers.collegeControllers import getColleges, removeCollege
 
 class CollegeTable(QtWidgets.QTableWidget):
   # Student variables
@@ -81,6 +81,7 @@ class CollegeTable(QtWidgets.QTableWidget):
     
     self.verticalHeader().setDefaultSectionSize(40)  # Increase row height
     self.verticalHeader().setFixedWidth(35)
+    self.verticalHeader().setVisible(False)
     self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
     
     header = self.horizontalHeader()
@@ -93,20 +94,40 @@ class CollegeTable(QtWidgets.QTableWidget):
   #--------------------------------------------------------------------------
   
   def refreshDisplayColleges(self):
-    if not self.colleges or self.colleges[0] is None:
-      self.setRowCount(0)
-      self.statusMessageSignal.emit("No colleges found", 3000)
-      return
-    
+    self.setRowCount(0)
     self.updateSortByIndex()
     primaryField, secondaryField = self.sortByFields[self.sortByIndex]
-    reverseOrder = (self.sortingOrder == 1)
+    sortingOrder = "ASC" if self.sortingOrder == 0 else "DESC"
+    
+    searchField = None
+    searchValue = ""
 
-    self.colleges.sort(key=itemgetter(primaryField, secondaryField), reverse=reverseOrder)
+    if self.parentWidget.isSearchActive:
+      searchIndex = self.parentWidget.searchByComboBox.currentIndex()
+      if searchIndex > 1:
+        searchField = self.searchByFields[searchIndex]
+      searchValue = self.parentWidget.searchBarLineEdit.text().strip()
+
+    page = self.parentWidget.page
+
+    colleges, totalCount = getColleges(page=page, sortBy1=primaryField, sortBy2=secondaryField, sortOrder=sortingOrder, searchField=searchField, searchTerm=searchValue)
+    self.colleges = colleges
+    
+    lastPage = (totalCount + 50 - 1) // 50
+    self.parentWidget.lastPage = lastPage
+
     self.populateTable()
-
-    self.searchColleges(self.parentWidget.searchBarLineEdit.text())
   
+  def initialCollegesToDisplay(self):
+    self.setRowCount(0)
+    colleges, _ = getColleges()
+    if not colleges:
+      self.colleges = []
+      return
+    
+    self.colleges = colleges
+    self.refreshDisplayColleges()
+
   def setColleges(self, newColleges):
     if newColleges is None:
       print("No records to set")
@@ -167,47 +188,6 @@ class CollegeTable(QtWidgets.QTableWidget):
 
     self.viewport().installEventFilter(self)
   
-  def addNewCollegeToTable(self, collegeData):
-    newCollege = {
-      "college_code": collegeData[0],
-      "college_name": collegeData[1],
-    }
-
-    if any(college["college_code"] == newCollege["college_code"] for college in self.colleges):
-      return
-
-    self.colleges.append(newCollege)
-    self.refreshDisplayColleges()
-
-  def editCollegeInTable(self, collegesData):
-    for collegeData in collegesData:
-      originalCollegeCode = collegeData[0]
-
-      newCollege = {
-        key: value
-        for key, value in {
-          "college_code": collegeData[1],
-          "college_name": collegeData[2],
-          }.items()
-        if value is not None
-      }
-
-    for college in self.colleges:
-      if college["college_code"] == originalCollegeCode:
-        college.update(newCollege)
-    
-    self.refreshDisplayColleges()
-
-  def initialCollegesToDisplay(self):
-    self.setRowCount(0)
-    colleges = getAllColleges()
-    if not colleges:
-      self.colleges = []
-      return
-    
-    self.colleges = colleges
-    self.refreshDisplayColleges()
-  
   def updateSortByIndex(self):
     sortByIndex = self.parentWidget.sortByComboBox.currentIndex()
     sortingOrder = self.parentWidget.sortingOrderComboBox.currentIndex()
@@ -219,7 +199,7 @@ class CollegeTable(QtWidgets.QTableWidget):
     selectedRows = list(set(index.row() for index in self.selectedIndexes()))
     collegeData = list(collegeRowData.values())
     self.updateDialog = UpdateCollegeDialog(self, collegeData)
-    self.updateDialog.collegeUpdatedTableSignal.connect(self.editCollegeInTable)
+    self.updateDialog.collegeUpdatedTableSignal.connect(self.refreshDisplayColleges)
     self.updateDialog.updateTablesSignal.connect(self.updateTablesSignal)
     self.updateDialog.statusMessageSignal.connect(self.parentWidget.displayMessageToStatusBar)
 
@@ -352,35 +332,3 @@ class CollegeTable(QtWidgets.QTableWidget):
           widget = operationsWidget.layout().itemAt(i).widget()
           if widget and isinstance(widget.graphicsEffect(), QGraphicsOpacityEffect):
             widget.graphicsEffect().setOpacity(1.0 if r == row else 0.0)
-
-  def resetSearch(self):
-    for row in range(self.rowCount()):
-      self.setRowHidden(row, False)
-
-  def searchColleges(self, searchText=""):
-    if not searchText.strip():
-      self.resetSearch()
-      return
-    
-    searchIndex = self.parentWidget.searchByComboBox.currentIndex()
-
-    searchText = searchText.lower()
-
-    for row in range(self.rowCount()):
-      rowMatches = False
-
-      if searchIndex < 2:
-        for col in range(self.columnCount()):
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-            break
-      
-      else:
-        col = searchIndex - 2
-        if 0 <= col < self.columnCount():
-          item = self.item(row, col)
-          if item and searchText in item.text().lower(): 
-            rowMatches = True
-
-      self.setRowHidden(row, not rowMatches)

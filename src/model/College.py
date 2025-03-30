@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Tuple, Any
 from pathlib import Path
 
 from database.db import getConnection
@@ -122,29 +122,67 @@ class College:
   
   # Get all college records
   @staticmethod
-  def getAllCollegeRecords() -> List[Dict[str, str]]:
+  def getCollegeRecords(page=1, perPage=50, sortBy1="college_code", sortBy2="college_name", sortOrder="ASC", searchField=None, searchTerm="") -> Tuple[List[Dict[str, str]], int]:
     conn = getConnection()
-    colleges = []
 
-    if conn:
-      cursor = conn.cursor(dictionary=True)
-      query = """
-        SELECT * FROM colleges
-        ORDER BY college_code;
-      """
-
-      try:
-        cursor.execute(query)
-
-        colleges = cursor.fetchall()
-      
-      except Exception as e:
-        print(f"College Model Error fetching all colleges: {e}")
-      finally:
-        cursor.close()
-        conn.close()
+    if not conn:
+      return [], 0
     
-    return colleges
+    cursor = conn.cursor(dictionary=True)
+    
+    params = []
+    colleges = []
+    offset = (page - 1) * perPage
+    searchTerms = searchTerm.split()
+    searchQuery = "WHERE ("
+
+    
+    if searchField:
+      searchQuery += f"c.{searchField} LIKE %s"
+      params.append(f"%{searchTerm}%")
+    else:
+      searchQuery += """
+        c.college_code LIKE %s 
+        OR c.college_name LIKE %s
+      """
+      params.extend([f"%{searchTerm}%"] * 2)
+
+    searchQuery += ")"
+
+    # Query to get the total count of matching records
+    countQuery = f"""
+      SELECT COUNT(*) as total 
+      FROM colleges c 
+      {searchQuery}
+    """
+
+    try:
+      cursor.execute(countQuery, params)
+      totalRecords = cursor.fetchone()["total"]
+    except Exception as e:
+      print(f"College Model Error fetching colleges: {e}")
+      totalRecords = 0
+
+    query = f"""
+      SELECT * 
+      FROM colleges c 
+      {searchQuery}
+      ORDER BY {sortBy1} {sortOrder}, {sortBy2} ASC
+      LIMIT %s OFFSET %s
+    """
+
+    params.extend([perPage, offset])
+
+    try:
+      cursor.execute(query, params)
+      colleges = cursor.fetchall()
+    except Exception as e:
+      print(f"College Model Error fetching colleges: {e}")
+    finally:
+      cursor.close()
+      conn.close()
+    
+    return colleges, totalRecords
 
   # Get program record
   @staticmethod
