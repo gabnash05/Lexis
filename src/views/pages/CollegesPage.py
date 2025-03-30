@@ -580,10 +580,12 @@ class CollegesPage(QtWidgets.QWidget):
     if self.page > 1:
       self.page -= 1
       self.pageLabel.setText(str(self.page))
+      self.collegeTable.verticalScrollBar().setValue(0)
       self.collegeTable.refreshDisplayColleges()
   
   def nextPage(self):
     if self.page < self.lastPage:
       self.page += 1
       self.pageLabel.setText(str(self.page))
+      self.collegeTable.verticalScrollBar().setValue(0)
       self.collegeTable.refreshDisplayColleges()

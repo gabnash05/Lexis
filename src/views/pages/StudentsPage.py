@@ -603,9 +603,11 @@ class StudentsPage(QtWidgets.QWidget):
             self.page -= 1
             self.pageLabel.setText(str(self.page))
             self.studentTable.refreshDisplayStudents()
+            self.studentTable.verticalScrollBar().setValue(0)
     
     def nextPage(self):
         if self.page < self.lastPage:
             self.page += 1
             self.pageLabel.setText(str(self.page))
             self.studentTable.refreshDisplayStudents()
+            self.studentTable.verticalScrollBar().setValue(0)
