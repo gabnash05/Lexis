@@ -117,7 +117,6 @@ class Student:
     searchTerms = searchTerm.split()
     searchQuery = "WHERE ("
 
-    
     if searchField:
       searchQuery += f"s.{searchField} LIKE %s"
       params.append(f"%{searchTerm}%")
@@ -130,15 +129,9 @@ class Student:
         OR s.gender LIKE %s
         OR s.program_code LIKE %s
         OR c.college_code LIKE %s
+        OR CONCAT(s.first_name, ' ', s.last_name) LIKE %s
       """
-      params.extend([f"%{searchTerm}%"] * 7)
-    
-    for term in searchTerms:
-      searchQuery += """
-        OR s.first_name LIKE %s
-        OR s.last_name LIKE %s
-      """
-      params.extend([f"%{term}%", f"%{term}%"])  # Match each word
+      params.extend([f"%{searchTerm}%"] * 8)
 
     searchQuery += ")"
 
