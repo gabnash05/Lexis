@@ -6,45 +6,29 @@
 This project is developed in fulfillment of the requirements for the subject **CCC151 - Information Management Systems**.
 
 <br></br>
+
 ## About This Project
 
-Lexis is a student information system built using Python, PyQt6, and using CSV data storage **without a DBMS**. It provides full CRUDL capabilities, including features such as **sorting**, **searching**, **unique ID management**, and **batch operations**.
+**Lexis** is a student information system designed for efficient academic record management. Built with **Python**, **PyQt6**, and **MySQL**, it offers a streamlined user experience with **intuitive navigation**, **dynamic filtering**, and **bulk processing** for large datasets.
 
 <br></br>
 
 ## **Features**
-- Store **STUDENT**, **PROGRAM**, and **COLLEGE** records for any University
-- **ADD**, **EDIT**, and **DELETE** records
-- **SORT** records by multiple fields 
-- **SEARCH** with or without specifying field
-- Intuitive **PyQt6** UI  
-- **CSV**-based database (lightweight storage)
-- **BATCH OPERATIONS** (batch updates and deletes)
-- **UNIQUE ID** storage
+- **Comprehensive Record Management** – Store and manage Student, Program, and College records efficiently.
 
-<br></br>
+- **Full CRUD Support** – Easily Add, Edit, and Delete records with a user-friendly interface.
 
-#### STUDENTS PAGE
-![Students Page](assets/readme/students_page.png)
+- **Advanced Search & Sorting** – Search by multiple fields and sort results dynamically.
 
-#### PROGRAMS PAGE
-![Programs Page](assets/readme/programs_page.png)
+- **Batch Operations** – Perform bulk updates and deletions for faster data management.
 
-#### COLLEGES PAGE
-![Colleges Page](assets/readme/colleges_page.png)
+- **Intuitive UI with PyQt6** – Clean, responsive interface for seamless interaction.
 
-#### ADDING RECORDS
-![Adding Records](assets/readme/add_records.png)
+- **MySQL Database Integration** – Ensures reliable and scalable data storage.
 
-#### UPDATING RECORDS
-![Updating Records](assets/readme/update_records.png)
+- **Unique ID System** – Prevents duplicate records and maintains data integrity.
 
-#### BATCH OPERATIONS
-![Batch Operations](assets/readme/batch_operations_update.gif)
-
-![Batch Operations](assets/readme/batch_operations_delete.gif)
-
-___
+- **Efficient Pagination** – Navigate large datasets smoothly without performance drops.
 
 <br></br>
 
@@ -54,9 +38,7 @@ ___
 ## **Future Updates**
 - 🔜 Add csv **importing** and **exporting**
 - 🔜 Add **user authentication** and make operations **role-based**. (Admins can add new colleges, but regular users can only view, add, update, and delete student records.)
-- 🔜 Add **pagination** to prevent gui loading lag
 - 🔜Add a **dashboard** page to show program and college statistics and graphs
-- 🔜Add an **executable** file to remove installation and setup process
 
 <br></br>
 
