@@ -130,15 +130,6 @@ class CollegeTable(QtWidgets.QTableWidget):
     self.colleges = colleges
     self.refreshDisplayColleges()
 
-  def setColleges(self, newColleges):
-    if newColleges is None:
-      print("No records to set")
-      self.programs = []  
-    else:
-      self.programs = newColleges
-
-    self.refreshDisplayColleges()
-
   def populateTable(self):
     self.setRowCount(len(self.colleges))
     
@@ -310,10 +301,6 @@ class CollegeTable(QtWidgets.QTableWidget):
     # Show the dialog and return the user's choice
     return msgBox.exec() == QtWidgets.QMessageBox.StandardButton.Yes
   
-  def handleCollegeDeleted(self, message, duration):
-    self.refreshDisplayColleges()
-    self.statusMessageSignal.emit(message, duration)
-
   def eventFilter(self, obj, event):
     if obj == self.viewport():
       if event.type() == QtCore.QEvent.Type.MouseMove:

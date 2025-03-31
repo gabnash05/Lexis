@@ -130,15 +130,6 @@ class ProgramTable(QtWidgets.QTableWidget):
     self.programs = programs
     self.refreshDisplayPrograms()
 
-  def setPrograms(self, newPrograms):
-    if newPrograms is None:
-      print("No records to set")
-      self.programs = []  
-    else:
-      self.programs = newPrograms
-
-    self.refreshDisplayPrograms()
-
   def populateTable(self):
     self.setRowCount(len(self.programs))
     
@@ -313,11 +304,7 @@ class ProgramTable(QtWidgets.QTableWidget):
 
     # Show the dialog and return the user's choice
     return msgBox.exec() == QtWidgets.QMessageBox.StandardButton.Yes
-  
-  def handleProgramDeleted(self, message, duration):
-    self.refreshDisplayPrograms()
-    self.statusMessageSignal.emit(message, duration)
-
+ 
   def eventFilter(self, obj, event):
     if obj == self.viewport():
       if event.type() == QtCore.QEvent.Type.MouseMove:

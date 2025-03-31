@@ -6,11 +6,6 @@ from views.components.CollegeTable import CollegeTable
 from views.components.AddCollegeDialog import AddCollegeDialog
 
 class CollegesPage(QtWidgets.QWidget):
-  searchByFields = {
-    "College Code": "college_code",
-    "College Name": "college_name"
-  }
-
   statusMessageSignal = pyqtSignal(str, int)
   spacebarPressedSignal = pyqtSignal()
   updateTablesSignal = pyqtSignal()

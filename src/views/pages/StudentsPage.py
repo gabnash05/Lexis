@@ -6,14 +6,6 @@ from views.components.StudentTable import StudentTable
 from views.components.AddStudentDialog import AddStudentDialog
 
 class StudentsPage(QtWidgets.QWidget):
-    searchByFields = {
-        "ID Number": "id_number",
-        "First Name": "first_name",
-        "Last Name": "last_name",
-        "Program Code": "program_code",
-        "College Code": "college_code"
-    }
-
     statusMessageSignal = pyqtSignal(str, int)
     enterPressedSignal = pyqtSignal()
 

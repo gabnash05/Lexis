@@ -6,12 +6,6 @@ from views.components.ProgramTable import ProgramTable
 from views.components.AddProgramDialog import AddProgramDialog
 
 class ProgramsPage(QtWidgets.QWidget):
-  searchByFields = {
-    "Program Code": "program_code",
-    "Program Name": "program_name",
-    "College Code": "college_code"
-  }
-
   statusMessageSignal = pyqtSignal(str, int)
   enterPressedSignal = pyqtSignal()
   updateTablesSignal = pyqtSignal()

@@ -328,10 +328,6 @@ class StudentTable(QtWidgets.QTableWidget):
 
     # Show the dialog and return the user's choice
     return msgBox.exec() == QtWidgets.QMessageBox.StandardButton.Yes
-  
-  def handleStudentDeleted(self, message, duration):
-    self.refreshDisplayStudents()
-    self.statusMessageSignal.emit(message, duration)
 
   def eventFilter(self, obj, event):
     if obj == self.viewport():
