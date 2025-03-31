@@ -3,7 +3,7 @@ from operator import itemgetter
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QGraphicsOpacityEffect, QTableWidgetItem
 from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QFont, QBrush, QColor 
 
 from controllers.studentControllers import getStudents, removeStudent
 from views.components.UpdateStudentDialog import UpdateStudentDialog
@@ -137,6 +137,12 @@ class StudentTable(QtWidgets.QTableWidget):
 
       nameItem = QTableWidgetItem(f"{student['first_name']} {student['last_name']}")
       self.setItem(row, 1, nameItem)
+
+      if f"{student['first_name']} {student['last_name']}" == "Kim Gabriel Nasayao":
+        font = QFont()
+        font.setBold(True)
+        nameItem.setFont(font)
+        nameItem.setForeground(QBrush(QColor("gold")))
 
       genderItem = QTableWidgetItem(student["gender"])
       genderItem.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
