@@ -14,6 +14,7 @@ class ProgramTable(QtWidgets.QTableWidget):
   # Program variables
   headers = ["Program Code", "Program Name", "College Code", "Operations"]
   sortByFields = [("program_code", "program_name"), ("program_name", "college_code"), ("college_code", "program_name")]
+  searchByFields = ["program_code", "program_name", "college_code"]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -105,7 +106,7 @@ class ProgramTable(QtWidgets.QTableWidget):
     if self.parentWidget.isSearchActive:
       searchIndex = self.parentWidget.searchByComboBox.currentIndex()
       if searchIndex > 1:
-        searchField = self.searchByFields[searchIndex]
+        searchField = self.searchByFields[searchIndex - 2]
       searchValue = self.parentWidget.searchBarLineEdit.text().strip()
 
     page = int(self.parentWidget.page)

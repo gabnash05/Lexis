@@ -13,6 +13,7 @@ class CollegeTable(QtWidgets.QTableWidget):
   # Student variables
   headers = ["College Code", "College Name", "Operations"]
   sortByFields = [("college_code", "college_name"), ("college_name", "college_code")]
+  searchByFields = ["college_code", "college_name"]
 
   # Signals
   statusMessageSignal = pyqtSignal(str, int)
@@ -105,7 +106,7 @@ class CollegeTable(QtWidgets.QTableWidget):
     if self.parentWidget.isSearchActive:
       searchIndex = self.parentWidget.searchByComboBox.currentIndex()
       if searchIndex > 1:
-        searchField = self.searchByFields[searchIndex]
+        searchField = self.searchByFields[searchIndex - 2]
       searchValue = self.parentWidget.searchBarLineEdit.text().strip()
 
     page = int(self.parentWidget.page)

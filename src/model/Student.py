@@ -118,7 +118,7 @@ class Student:
     searchQuery = "WHERE ("
 
     if searchField:
-      searchQuery += f"s.{searchField} LIKE %s"
+      searchQuery += f"s.{searchField} LIKE %s" if searchField != "college_code" else f"c.{searchField} LIKE %s"
       params.append(f"%{searchTerm}%")
     else:
       searchQuery += """
@@ -167,7 +167,7 @@ class Student:
       cursor.execute(query, params)
       programs = cursor.fetchall()
     except Exception as e:
-      print(f"Student Model Error fetching all students: {e}")
+      print(f"Student Model Error fetching students: {e}")
     finally:
       cursor.close()
       conn.close()

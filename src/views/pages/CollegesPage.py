@@ -464,8 +464,8 @@ class CollegesPage(QtWidgets.QWidget):
 
     self.pageLabel = QtWidgets.QLineEdit("1", parent=self.controlsFrame)
     self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-    self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
-    self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
+    self.pageLabel.setMinimumSize(QtCore.QSize(60, 30))
+    self.pageLabel.setMaximumSize(QtCore.QSize(60, 30))
     self.pageLabel.setStyleSheet("background: transparent; outline: none;")
 
     self.validator = PageIntValidator(1, self.lastPage)
