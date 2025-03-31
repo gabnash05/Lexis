@@ -1,6 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal, Qt
 
+from utils.PageIntValidator import PageIntValidator
 from views.components.ProgramTable import ProgramTable
 from views.components.AddProgramDialog import AddProgramDialog
 
@@ -42,6 +43,8 @@ class ProgramsPage(QtWidgets.QWidget):
 
     self.searchByComboBox.currentIndexChanged.connect(self.searchPrograms)
     self.enterPressedSignal.connect(self.searchPrograms)
+
+    self.pageLabel.editingFinished.connect(self.handlePageChange)
 
     self.displayMessageToStatusBar("Programs Page Loaded", 3000)
       
@@ -468,9 +471,12 @@ class ProgramsPage(QtWidgets.QWidget):
 
     self.pageLabel = QtWidgets.QLineEdit("1", parent=self.controlsFrame)
     self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-    self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
-    self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
-    self.pageLabel.setStyleSheet("background: transparent; selection-background-color: transparent; outline: none;")
+    self.pageLabel.setMinimumSize(QtCore.QSize(60, 30))
+    self.pageLabel.setMaximumSize(QtCore.QSize(60, 30))
+    self.pageLabel.setStyleSheet("background: transparent; outline: none;")
+
+    self.validator = PageIntValidator(1, self.lastPage)
+    self.pageLabel.setValidator(self.validator)
 
     font = QtGui.QFont()
     font.setBold(True)
@@ -565,11 +571,14 @@ class ProgramsPage(QtWidgets.QWidget):
     self.addDialog.exec()
   
   def keyPressEvent(self, event):
-    if event.key() == Qt.Key.Key_Return:
-      self.enterPressedSignal.emit()
+    if self.searchBarLineEdit.hasFocus():
+      if event.key() == Qt.Key.Key_Return:
+        self.enterPressedSignal.emit()
 
   def handleRefresh(self):
     self.searchBarLineEdit.clear()
+    self.page = 1
+    self.pageLabel.setText(str(self.page))
     self.programTable.refreshDisplayPrograms()
     self.refreshButton.setVisible(False)
     self.isSearchActive = False
@@ -597,3 +606,7 @@ class ProgramsPage(QtWidgets.QWidget):
       self.pageLabel.setText(str(self.page))
       self.programTable.verticalScrollBar().setValue(0)
       self.programTable.refreshDisplayPrograms()
+  
+  def handlePageChange(self):
+    self.page = int(self.pageLabel.text())
+    self.programTable.refreshDisplayPrograms()

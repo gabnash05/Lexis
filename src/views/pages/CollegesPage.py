@@ -1,10 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal, Qt
 
+from utils.PageIntValidator import PageIntValidator
 from views.components.CollegeTable import CollegeTable
 from views.components.AddCollegeDialog import AddCollegeDialog
-from views.components.UpdateCollegeDialog import UpdateCollegeDialog
-
 
 class CollegesPage(QtWidgets.QWidget):
   searchByFields = {
@@ -43,6 +42,8 @@ class CollegesPage(QtWidgets.QWidget):
 
     self.searchByComboBox.currentIndexChanged.connect(self.searchColleges)
     self.spacebarPressedSignal.connect(self.searchColleges)
+
+    self.pageLabel.editingFinished.connect(self.handlePageChange)
 
     self.displayMessageToStatusBar("Colleges Page Loaded", 3000)
       
@@ -465,7 +466,10 @@ class CollegesPage(QtWidgets.QWidget):
     self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
     self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
     self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
-    self.pageLabel.setStyleSheet("background: transparent; selection-background-color: transparent; outline: none;")
+    self.pageLabel.setStyleSheet("background: transparent; outline: none;")
+
+    self.validator = PageIntValidator(1, self.lastPage)
+    self.pageLabel.setValidator(self.validator)
 
     font = QtGui.QFont()
     font.setBold(True)
@@ -558,11 +562,14 @@ class CollegesPage(QtWidgets.QWidget):
     self.addDialog.exec()
 
   def keyPressEvent(self, event):
-    if event.key() == Qt.Key.Key_Return:
-      self.spacebarPressedSignal.emit()
+    if self.searchBarLineEdit.hasFocus():
+      if event.key() == Qt.Key.Key_Return:
+        self.spacebarPressedSignal.emit()
 
   def handleRefresh(self):
     self.searchBarLineEdit.clear()
+    self.page = 1
+    self.pageLabel.setText(str(self.page))
     self.collegeTable.refreshDisplayColleges()
     self.refreshButton.setVisible(False)
     self.isSearchActive = False
@@ -590,3 +597,7 @@ class CollegesPage(QtWidgets.QWidget):
       self.pageLabel.setText(str(self.page))
       self.collegeTable.verticalScrollBar().setValue(0)
       self.collegeTable.refreshDisplayColleges()
+  
+  def handlePageChange(self):
+    self.page = int(self.pageLabel.text())
+    self.collegeTable.refreshDisplayColleges()
