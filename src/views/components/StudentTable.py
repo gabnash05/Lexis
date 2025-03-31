@@ -107,13 +107,14 @@ class StudentTable(QtWidgets.QTableWidget):
         searchField = self.searchByFields[searchIndex]
       searchValue = self.parentWidget.searchBarLineEdit.text().strip()
 
-    page = self.parentWidget.page
+    page = int(self.parentWidget.page)
 
     students, totalCount = getStudents(page=page, sortBy1=primaryField, sortBy2=secondaryField, sortOrder=sortingOrder, searchField=searchField, searchTerm=searchValue)
     self.students = students
     
     lastPage = (totalCount + 50 - 1) // 50
     self.parentWidget.lastPage = lastPage
+    self.parentWidget.validator.setTop(lastPage)
 
     self.populateTable()
 

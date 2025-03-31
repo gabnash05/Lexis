@@ -461,10 +461,11 @@ class CollegesPage(QtWidgets.QWidget):
     self.prevPageButton.clicked.connect(self.prevPage)
     self.horizontalLayout.addWidget(self.prevPageButton)
 
-    self.pageLabel = QtWidgets.QLabel("1", parent=self.controlsFrame)
+    self.pageLabel = QtWidgets.QLineEdit("1", parent=self.controlsFrame)
     self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
     self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
     self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
+    self.pageLabel.setStyleSheet("background: transparent; selection-background-color: transparent; outline: none;")
 
     font = QtGui.QFont()
     font.setBold(True)

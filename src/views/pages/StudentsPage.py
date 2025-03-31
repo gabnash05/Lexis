@@ -1,6 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal, Qt
 
+from utils.PageIntValidator import PageIntValidator
 from views.components.StudentTable import StudentTable
 from views.components.AddStudentDialog import AddStudentDialog
 
@@ -40,8 +41,10 @@ class StudentsPage(QtWidgets.QWidget):
         self.sortByComboBox.currentIndexChanged.connect(self.studentTable.refreshDisplayStudents)
         self.sortingOrderComboBox.currentIndexChanged.connect(self.studentTable.refreshDisplayStudents)
 
-        self.searchByComboBox.currentIndexChanged.connect(self.studentTable.refreshDisplayStudents)
+        self.searchByComboBox.currentIndexChanged.connect(self.searchStudents)
         self.enterPressedSignal.connect(self.searchStudents)
+
+        self.pageLabel.editingFinished.connect(self.handlePageChange)
 
         self.displayMessageToStatusBar("Students Page Loaded", 3000)
         
@@ -470,10 +473,14 @@ class StudentsPage(QtWidgets.QWidget):
         self.horizontalLayout.addWidget(self.prevPageButton)
 
         # Page Number Label
-        self.pageLabel = QtWidgets.QLabel("1", parent=self.controlsFrame)
+        self.pageLabel = QtWidgets.QLineEdit("1", parent=self.controlsFrame)
         self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.pageLabel.setMinimumSize(QtCore.QSize(30, 30))
-        self.pageLabel.setMaximumSize(QtCore.QSize(30, 30))
+        self.pageLabel.setMinimumSize(QtCore.QSize(60, 30))
+        self.pageLabel.setMaximumSize(QtCore.QSize(60, 30))
+        self.pageLabel.setStyleSheet("background: transparent; outline: none;")
+
+        self.validator = PageIntValidator(1, self.lastPage)
+        self.pageLabel.setValidator(self.validator)
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -579,11 +586,14 @@ class StudentsPage(QtWidgets.QWidget):
         self.addDialog.exec()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Return:
-            self.enterPressedSignal.emit()
+        if self.searchBarLineEdit.hasFocus():
+            if event.key() == Qt.Key.Key_Return:
+                self.enterPressedSignal.emit()
 
     def handleRefresh(self):
         self.searchBarLineEdit.clear()
+        self.page = 1
+        self.pageLabel.setText(str(self.page))
         self.studentTable.refreshDisplayStudents()
         self.refreshButton.setVisible(False)
         self.isSearchActive = False
@@ -611,3 +621,8 @@ class StudentsPage(QtWidgets.QWidget):
             self.pageLabel.setText(str(self.page))
             self.studentTable.refreshDisplayStudents()
             self.studentTable.verticalScrollBar().setValue(0)
+    
+    def handlePageChange(self):
+        self.page = int(self.pageLabel.text())
+        self.studentTable.refreshDisplayStudents()
+        
