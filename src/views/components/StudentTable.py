@@ -115,6 +115,7 @@ class StudentTable(QtWidgets.QTableWidget):
     lastPage = (totalCount + 50 - 1) // 50
     self.parentWidget.lastPage = lastPage
     self.parentWidget.validator.setTop(lastPage)
+    self.parentWidget.lastPageInfo.setText(f"of {lastPage}")
 
     self.populateTable()
 
