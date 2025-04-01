@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from controllers.programControllers import getPrograms
 from controllers.collegeControllers import getColleges
-from controllers.studentControllers import updateStudent
+from controllers.studentControllers import batchUpdateStudents
 
 class UpdateBatchStudentDialog(QtWidgets.QDialog):
   studentUpdatedTableSignal = QtCore.pyqtSignal(list)
@@ -68,7 +68,7 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
 
     # Gender
     self.genderInput = QtWidgets.QComboBox(self)
-    self.genderInput.addItems(["", "Male", "Female", "Others"])
+    self.genderInput.addItems(["", "Male", "Female", "Other"])
     self.genderInput.model().item(0).setEnabled(False)
 
     # College and Program
@@ -138,13 +138,13 @@ class UpdateBatchStudentDialog(QtWidgets.QDialog):
         self.showStatusMessage("Selected College has no Programs")
         return
 
-    for idNumber in self.studentIDs:
-      result = updateStudent(idNumber, idNumber, None, None, yearLevel, gender, programCode, collegeCode, False)
-      if result != "Student updated successfully.":
-        self.showStatusMessage(result)
-        return
-      updatedStudents.append([idNumber, idNumber, None, None, gender, yearLevel, programCode, collegeCode])
-
+    result = batchUpdateStudents(self.studentIDs, yearLevel, gender, programCode, collegeCode, False)
+    
+    if result != "Students updated successfully.":
+      self.showStatusMessage(result)
+      return
+      
+    # THIS IS OUTDATED! ITS JUST FOR THE SIGNAL TO WORK
     self.studentUpdatedTableSignal.emit(updatedStudents)
     self.statusMessageSignal.emit("Students Updated", 3000)
     self.accept()
