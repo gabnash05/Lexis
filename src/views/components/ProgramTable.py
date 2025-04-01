@@ -7,8 +7,7 @@ from PyQt6.QtGui import QIcon
 
 from views.components.UpdateProgramDialog import UpdateProgramDialog
 
-from controllers.programControllers import getPrograms
-from controllers.programControllers import removeProgram
+from controllers.programControllers import getPrograms, removeProgram, batchRemovePrograms
 
 class ProgramTable(QtWidgets.QTableWidget):
   # Program variables
@@ -212,30 +211,25 @@ class ProgramTable(QtWidgets.QTableWidget):
 
     # Multiple Deletions
     if len(selectedRows) > 1:
-      programCodes = f'\n{"\n".join(f'{self.item(row, 0).text()}' for row in selectedRows)}'
-
-      promptText = f"the following programs?\n{programCodes}" if selectedRowCount < 20 else f"{selectedRowCount} programs"
-
+      programCodesText = f'\n{"\n".join(f'{self.item(row, 0).text()}' for row in selectedRows)}'
+      promptText = f"the following programs?\n{programCodesText}" if selectedRowCount < 20 else f"{selectedRowCount} programs"
       if not self.showDeleteConfirmation(self, promptText):
         return
       
-      failedDeletions = []
+      programCodes = []
+      for row in sorted(selectedRows, reverse=True):      # Reverse to avoid shifting indices
+        programCodes.append(self.programs[row]["program_code"])
 
-      for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
-        program = self.programs[row]
-        result = removeProgram(program["program_code"])
+      result = batchRemovePrograms(programCodes)
+      if result != "Programs removed successfully.":
+        self.statusMessageSignal.emit("Failed to remove selected programs.", 3000)
+        return
 
-        if result == "Program removed successfully.":
-          self.programs.pop(row)
-          self.removeRow(row)
-        else:
-          failedDeletions.append(program["program_code"])
-
-      # Emit status message
-      if failedDeletions:
-        self.statusMessageSignal.emit(f"Failed to remove: {', '.join(failedDeletions)}", 3000)
-      else:
-        self.statusMessageSignal.emit("Selected programs removed successfully.", 3000)
+      for row in sorted(selectedRows, reverse=True):  
+        self.programs.pop(row)
+        self.removeRow(row)
+      
+      self.statusMessageSignal.emit("Selected programs removed successfully.", 3000)
     
     # Single Deletion
     else:

@@ -40,3 +40,8 @@ def removeCollege(collegeCode: str) -> str:
   isSuccessful = College.deleteCollegeRecord(collegeCode)
 
   return "College removed successfully." if isSuccessful else "Failed to remove college."
+
+def batchRemoveColleges(collegeCodes: List[str]) -> str:
+  isSuccesful = College.removeBatchCollegeRecordsById(collegeCodes)
+
+  return "Colleges removed successfully." if isSuccesful else "Failed to remove colleges."

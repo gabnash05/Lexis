@@ -7,7 +7,7 @@ from PyQt6.QtGui import QIcon
 
 from views.components.UpdateCollegeDialog import UpdateCollegeDialog
 
-from controllers.collegeControllers import getColleges, removeCollege
+from controllers.collegeControllers import getColleges, removeCollege, batchRemoveColleges
 
 class CollegeTable(QtWidgets.QTableWidget):
   # Student variables
@@ -208,30 +208,25 @@ class CollegeTable(QtWidgets.QTableWidget):
 
     # Multiple Deletions
     if len(selectedRows) > 1:
-      collegeCodes = f'\n{"\n".join(f'{self.item(row, 0).text()}' for row in selectedRows)}'
-
-      promptText = f"the following colleges?\n{collegeCodes}" if selectedRowCount < 20 else f"{selectedRowCount} colleges"
-
+      collegeCodesText = f'\n{"\n".join(f'{self.item(row, 0).text()}' for row in selectedRows)}'
+      promptText = f"the following colleges?\n{collegeCodesText}" if selectedRowCount < 20 else f"{selectedRowCount} colleges"
       if not self.showDeleteConfirmation(self, promptText):
         return
+
+      collegeCodes = []
+      for row in sorted(selectedRows, reverse=True):      # Reverse to avoid shifting indices
+        collegeCodes.append(self.colleges[row]["college_code"])
+
+      result = batchRemoveColleges(collegeCodes)
+      if result != "Colleges removed successfully.":
+        self.statusMessageSignal.emit("Failed to remove selected colleges.", 3000)
+        return
+
+      for row in sorted(selectedRows, reverse=True):  
+        self.colleges.pop(row)
+        self.removeRow(row)
       
-      failedDeletions = []
-
-      for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
-        college = self.colleges[row]
-        result = removeCollege(college["college_code"])
-
-        if result == "College removed successfully.":
-          self.colleges.pop(row)
-          self.removeRow(row)
-        else:
-          failedDeletions.append(college["college_code"])
-
-      # Emit status message
-      if failedDeletions:
-        self.statusMessageSignal.emit(f"Failed to remove: {', '.join(failedDeletions)}", 3000)
-      else:
-        self.statusMessageSignal.emit("Selected colleges removed successfully.", 3000)
+      self.statusMessageSignal.emit("Selected colleges removed successfully.", 3000)
     
     # Single Deletion
     else:

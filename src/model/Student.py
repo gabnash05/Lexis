@@ -455,7 +455,7 @@ class Student:
       cursor.close()
       conn.close()
 
-  # Batch Removes a student record
+  # Batch Removes student records
   @staticmethod
   def removeBatchStudentRecordsById(studentIds: List[str]) -> bool:
     conn = getConnection()

@@ -277,3 +277,35 @@ class Program:
       cursor.close()
       conn.close()
   
+  # Batch Removes program records
+  @staticmethod
+  def removeBatchProgramRecordsById(programCodes: List[str]) -> bool:
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    idNumberPlaceholders = ", ".join(["%s"] * len(programCodes))
+    whereClause = f"WHERE program_code IN ({idNumberPlaceholders})"
+    values = tuple(programCodes)
+
+    query = f"""
+      DELETE FROM programs
+      {whereClause}
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Program Model Error batch deleting programs: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
