@@ -387,6 +387,46 @@ class Student:
       cursor.close()
       conn.close()
   
+  # Batch updates student information
+  @staticmethod
+  def updateBatchStudentRecordsById(studentIds: List[str], updateData: Dict[str, str]) -> bool:
+    conn = getConnection()
+    
+    if not studentIds:
+      return False
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    setClause = ", ".join(f'{key} = %s' for key in updateData.keys())
+    values = tuple(updateData.values())
+
+    idNumberPlaceholders = ", ".join(["%s"] * len(studentIds))
+    whereClause = f"WHERE id_number IN ({idNumberPlaceholders})"
+    values += tuple(studentIds)
+
+    query = f"""
+      UPDATE students
+      SET {setClause}
+      {whereClause}
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount >= 0
+
+    except Exception as e:
+      print(f"Student Model Error batch updating students: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()
+
   # Removes a student record
   @staticmethod
   def removeStudentRecordById(studentId: str) -> bool:
@@ -415,3 +455,35 @@ class Student:
       cursor.close()
       conn.close()
 
+  # Batch Removes student records
+  @staticmethod
+  def removeBatchStudentRecordsById(studentIds: List[str]) -> bool:
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    idNumberPlaceholders = ", ".join(["%s"] * len(studentIds))
+    whereClause = f"WHERE id_number IN ({idNumberPlaceholders})"
+    values = tuple(studentIds)
+
+    query = f"""
+      DELETE FROM students 
+      {whereClause}
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"Student Model Error batch deleting students: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()

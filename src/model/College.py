@@ -244,4 +244,36 @@ class College:
     finally:
       cursor.close()
       conn.close()
-      
+  
+  # Batch Removes college records
+  @staticmethod
+  def removeBatchCollegeRecordsById(collegeCodes: List[str]) -> bool:
+    conn = getConnection()
+    
+    if not conn:
+      return False
+    
+    cursor = conn.cursor(dictionary=True)
+
+    idNumberPlaceholders = ", ".join(["%s"] * len(collegeCodes))
+    whereClause = f"WHERE college_code IN ({idNumberPlaceholders})"
+    values = tuple(collegeCodes)
+
+    query = f"""
+      DELETE FROM colleges
+      {whereClause}
+    """
+
+    try:
+      cursor.execute(query, values)
+      conn.commit()
+
+      return cursor.rowcount > 0
+
+    except Exception as e:
+      print(f"College Model Error batch deleting colleges: {e}")
+      return False
+    
+    finally:
+      cursor.close()
+      conn.close()

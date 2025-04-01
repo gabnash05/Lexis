@@ -45,3 +45,8 @@ def removeProgram(programCode: str) -> str:
   isSuccessful = Program.deleteProgramRecord(programCode)
 
   return "Program removed successfully." if isSuccessful else "Failed to remove program." 
+
+def batchRemovePrograms(programCodes: List[str]) -> str:
+  isSuccesful = Program.removeBatchProgramRecordsById(programCodes)
+
+  return "Programs removed successfully." if isSuccesful else "Failed to remove programs."

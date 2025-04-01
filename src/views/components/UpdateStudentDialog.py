@@ -68,7 +68,7 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     self.yearLevelInput.setCurrentText(str(studentData[3]))
 
     self.genderInput = QtWidgets.QComboBox(self)
-    self.genderInput.addItems(["Male", "Female", "Others"])
+    self.genderInput.addItems(["Male", "Female", "Other"])
     self.genderInput.setCurrentText(studentData[4])
 
     self.idInput = QtWidgets.QLineEdit(self)

@@ -1,7 +1,7 @@
 import re
 
 ID_NUMBER_PATTERN = r'^\d{4}-\d{4}$'
-GENDER_LIST = ["male", "female", "others"]
+GENDER_LIST = ["male", "female", "other"]
 
 def validateIdNumber(idNumber: str) -> bool:
   if re.match(ID_NUMBER_PATTERN, idNumber):

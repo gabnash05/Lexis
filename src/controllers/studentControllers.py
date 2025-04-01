@@ -57,7 +57,7 @@ def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: 
     return("Year Level must be a positive integer.")
   
   if newGender and not validateGender(newGender):
-    return "Gender must be Male, Female, or Others."
+    return "Gender must be Male, Female, or Other."
   
   if newProgramCode and not Program.programCodeExists(newProgramCode):
     return "Program Code does not exist"
@@ -82,6 +82,43 @@ def updateStudent(originalId, newIdNumber: str, newFirstName: str, newLastName: 
 
   return "Student updated successfully." if isSuccessful else "Failed to update student."
 
+def batchUpdateStudents(studentIds: List[str], newYearLevel: int, newGender: str, newProgramCode: str, newCollegeCode: str, validateParameters: bool) -> str:
+  if validateParameters:
+    if newProgramCode is None:
+      return "Select a Valid Program Code"
+    if newCollegeCode is None:
+      return "Select a Valid College Code"
+
+  if isinstance(newYearLevel, str) and newYearLevel.isdigit():
+    newYearLevel = int(newYearLevel)
+
+  if newYearLevel and not validateYearLevel(newYearLevel):
+    return "Year Level must be a positive integer."
+
+  if newGender and not validateGender(newGender):
+    return "Gender must be Male, Female, or Other."
+
+  if newProgramCode and not Program.programCodeExists(newProgramCode):
+    return "Program Code does not exist"
+
+  if newCollegeCode and not College.collegeCodeExists(newCollegeCode):
+    return "College Code does not exist"
+
+  updateData = {
+    key: value
+    for key, value in {
+      "year_level": newYearLevel,
+      "gender": newGender,
+      "program_code": newProgramCode,
+      "college_code": newCollegeCode
+    }.items()
+    if value is not None 
+  }
+
+  isSuccessful = Student.updateBatchStudentRecordsById(studentIds, updateData)
+
+  return "Students updated successfully." if isSuccessful else "Failed to update students."
+
 def removeStudent(idNumber: str) -> str:
   if not validateIdNumber(idNumber):
     return("Invalid ID Number")
@@ -89,3 +126,8 @@ def removeStudent(idNumber: str) -> str:
   isSuccessful = Student.removeStudentRecordById(idNumber)
 
   return "Student removed successfully." if isSuccessful else "Failed to remove student."
+
+def batchRemoveStudents(idNumbers: List[str]) -> str:
+  isSuccesful = Student.removeBatchStudentRecordsById(idNumbers)
+
+  return "Students removed successfully." if isSuccesful else "Failed to remove students."
