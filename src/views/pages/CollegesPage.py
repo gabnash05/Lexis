@@ -452,10 +452,12 @@ class CollegesPage(QtWidgets.QWidget):
     self.horizontalLayout.addItem(spacerItem3)
 
     self.prevPageButton = QtWidgets.QPushButton("<", parent=self.controlsFrame)
-    self.prevPageButton.setMaximumSize(QtCore.QSize(40, 30))
+    self.prevPageButton.setMaximumSize(QtCore.QSize(40, 40))
     self.prevPageButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
     self.prevPageButton.clicked.connect(self.prevPage)
     self.horizontalLayout.addWidget(self.prevPageButton)
+
+    self.pageLayout = QtWidgets.QVBoxLayout()
 
     self.pageLabel = QtWidgets.QLineEdit("1", parent=self.controlsFrame)
     self.pageLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -466,15 +468,27 @@ class CollegesPage(QtWidgets.QWidget):
     self.validator = PageIntValidator(1, self.lastPage)
     self.pageLabel.setValidator(self.validator)
 
-    font = QtGui.QFont()
-    font.setBold(True)
-    font.setPointSize(13)
-    self.pageLabel.setFont(font)
+    font1 = QtGui.QFont()
+    font1.setBold(True)
+    font1.setPointSize(13)
+    self.pageLabel.setFont(font1)
 
-    self.horizontalLayout.addWidget(self.pageLabel)
+    font2 = QtGui.QFont()
+    font2.setPointSize(10)
+
+    self.lastPageInfo = QtWidgets.QLabel(f"of {self.lastPage}", parent=self.controlsFrame)
+    self.lastPageInfo.setStyleSheet("color: gray;")
+    self.lastPageInfo.setFont(QtGui.QFont(font2)) 
+    self.lastPageInfo.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+    # Add QLineEdit and QLabel to the vertical layout
+    self.pageLayout.addWidget(self.pageLabel)
+    self.pageLayout.addWidget(self.lastPageInfo)
+
+    self.horizontalLayout.addLayout(self.pageLayout)
 
     self.nextPageButton = QtWidgets.QPushButton(">", parent=self.controlsFrame)
-    self.nextPageButton.setMaximumSize(QtCore.QSize(40, 30))
+    self.nextPageButton.setMaximumSize(QtCore.QSize(40, 40))
     self.nextPageButton.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
     self.nextPageButton.clicked.connect(self.nextPage)
     self.horizontalLayout.addWidget(self.nextPageButton)
