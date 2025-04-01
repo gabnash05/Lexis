@@ -126,3 +126,8 @@ def removeStudent(idNumber: str) -> str:
   isSuccessful = Student.removeStudentRecordById(idNumber)
 
   return "Student removed successfully." if isSuccessful else "Failed to remove student."
+
+def batchRemoveStudents(idNumbers: List[str]) -> str:
+  isSuccesful = Student.removeBatchStudentRecordsById(idNumbers)
+
+  return "Students removed successfully." if isSuccesful else "Failed to remove students."

@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QGraphicsOpacityEffect, QTableWidgetItem
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QIcon
 
-from controllers.studentControllers import getStudents, removeStudent
+from controllers.studentControllers import getStudents, removeStudent, batchRemoveStudents
 from views.components.UpdateStudentDialog import UpdateStudentDialog
 from views.components.UpdateBatchStudentDialog import UpdateBatchStudentDialog
 
@@ -238,29 +238,24 @@ class StudentTable(QtWidgets.QTableWidget):
     # Multiple Deletions
     if len(selectedRows) > 1:
       studentNames = f'\n{"\n".join(f'{self.item(row, 1).text()}' for row in selectedRows)}'
-
       promptText = f"the following students?\n{studentNames}" if selectedRowCount < 20 else f"{selectedRowCount} students"
-
       if not self.showDeleteConfirmation(self, promptText):
         return
       
-      failedDeletions = []
+      idNumbers = []
+      for row in sorted(selectedRows, reverse=True):      # Reverse to avoid shifting indices
+        idNumbers.append(self.students[row]["id_number"])
 
-      for row in sorted(selectedRows, reverse=True):  # Reverse to avoid shifting indices
-        student = self.students[row]
-        result = removeStudent(student["id_number"])
+      result = batchRemoveStudents(idNumbers)
+      if result != "Students removed successfully.":
+        self.statusMessageSignal.emit("Failed to remove selected students.", 3000)
+        return
 
-        if result == "Student removed successfully.":
-          self.students.pop(row)
-          self.removeRow(row)
-        else:
-          failedDeletions.append(student["id_number"])
-
-      # Emit status message
-      if failedDeletions:
-        self.statusMessageSignal.emit(f"Failed to remove: {', '.join(failedDeletions)}", 3000)
-      else:
-        self.statusMessageSignal.emit("Selected students removed successfully.", 3000)
+      for row in sorted(selectedRows, reverse=True):  
+        self.students.pop(row)
+        self.removeRow(row)
+      
+      self.statusMessageSignal.emit("Selected students removed successfully.", 3000)
     
     # Single Deletion
     else:
