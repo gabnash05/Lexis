@@ -80,7 +80,6 @@ class StudentTable(QtWidgets.QTableWidget):
     
     self.verticalHeader().setDefaultSectionSize(40)
     self.verticalHeader().setFixedWidth(35)
-    self.verticalHeader().setVisible(False)
     self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
     
     header = self.horizontalHeader()
@@ -200,6 +199,8 @@ class StudentTable(QtWidgets.QTableWidget):
       
       self.setCellWidget(row, 6, operationsWidget)
 
+    startIndex = (self.parentWidget.page * 50) - 49
+    self.setVerticalHeaderLabels([str(i) for i in range(startIndex, startIndex + 51)])
     self.viewport().installEventFilter(self)
 
   def updateSortByIndex(self):

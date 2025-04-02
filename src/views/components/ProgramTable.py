@@ -81,7 +81,6 @@ class ProgramTable(QtWidgets.QTableWidget):
     
     self.verticalHeader().setDefaultSectionSize(40)  # Increase row height
     self.verticalHeader().setFixedWidth(35)
-    self.verticalHeader().setVisible(False)
     self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
     
     header = self.horizontalHeader()
@@ -183,6 +182,8 @@ class ProgramTable(QtWidgets.QTableWidget):
       
       self.setCellWidget(row, 3, operationsWidget)
 
+    startIndex = (self.parentWidget.page * 50) - 49
+    self.setVerticalHeaderLabels([str(i) for i in range(startIndex, startIndex + 51)])
     self.viewport().installEventFilter(self)
 
   def updateSortByIndex(self):
