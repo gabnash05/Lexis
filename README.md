@@ -39,6 +39,7 @@ This project is developed in fulfillment of the requirements for the subject **C
 - 🔜 Add csv **importing** and **exporting**
 - 🔜 Add **user authentication** and make operations **role-based**. (Admins can add new colleges, but regular users can only view, add, update, and delete student records.)
 - 🔜Add a **dashboard** page to show program and college statistics and graphs
+- 🔜**Package** the application into an executable with a working database to ensure easy distribution
 
 <br></br>
 
