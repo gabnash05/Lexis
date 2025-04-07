@@ -590,6 +590,8 @@ class CollegesPage(QtWidgets.QWidget):
       self.page = 1
       self.pageLabel.setText(str(self.page))
       self.isSearchActive = True
+    else:
+      self.refreshButton.setVisible(False)
 
     self.collegeTable.refreshDisplayColleges()
 

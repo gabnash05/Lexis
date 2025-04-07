@@ -613,7 +613,9 @@ class StudentsPage(QtWidgets.QWidget):
             self.page = 1
             self.pageLabel.setText(str(self.page))
             self.isSearchActive = True
-
+        else:
+            self.refreshButton.setVisible(False)
+            
         self.studentTable.refreshDisplayStudents()
 
     def prevPage(self):
