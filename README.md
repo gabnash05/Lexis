@@ -33,7 +33,8 @@ This project is developed in fulfillment of the requirements for the subject **C
 <br></br>
 
 ## **Added Updates**
-- ✅ Refactor the table view to allow **multi-selection** of rows for **batch operations** (Batch deletions and edits)
+- ✅ Add **multi-selection** of rows for **batch operations** (Batch deletions and edits)
+- ✅ Add **pagination** to all tables 
 
 ## **Future Updates**
 - 🔜 Add csv **importing** and **exporting**
