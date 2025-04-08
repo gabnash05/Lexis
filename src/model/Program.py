@@ -83,18 +83,16 @@ class Program:
     params = []
     programs = []
     offset = (page - 1) * perPage
-    searchTerms = searchTerm.split()
     searchQuery = "WHERE ("
 
-    
     if searchField:
-      searchQuery += f"p.{searchField} LIKE %s"
-      params.append(f"%{searchTerm}%")
+      searchQuery += f"{searchField} = %s"
+      params.append(f"{searchTerm}")
     else:
       searchQuery += """
-        p.program_code LIKE %s 
-        OR p.program_name LIKE %s
-        OR p.college_code LIKE %s
+        program_code LIKE %s 
+        OR program_name LIKE %s
+        OR college_code LIKE %s
       """
       params.extend([f"%{searchTerm}%"] * 3)
 
@@ -116,14 +114,14 @@ class Program:
 
     query = f"""
       SELECT * 
-      FROM programs p 
+      FROM programs
       {searchQuery}
       ORDER BY {sortBy1} {sortOrder}, {sortBy2} ASC
       LIMIT %s OFFSET %s
     """
 
     params.extend([perPage, offset])
-
+    
     try:
       cursor.execute(query, params)
       programs = cursor.fetchall()

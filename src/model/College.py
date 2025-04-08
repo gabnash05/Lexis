@@ -138,8 +138,8 @@ class College:
 
     
     if searchField:
-      searchQuery += f"c.{searchField} LIKE %s"
-      params.append(f"%{searchTerm}%")
+      searchQuery += f"c.{searchField} = %s"
+      params.append(f"{searchTerm}")
     else:
       searchQuery += """
         c.college_code LIKE %s 
