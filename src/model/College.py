@@ -138,12 +138,16 @@ class College:
 
     
     if searchField:
-      searchQuery += f"c.{searchField} = %s"
-      params.append(f"{searchTerm}")
+      if searchField == "college_code" and searchTerm != "":
+        searchQuery += f"{searchField} = %s"
+        params.append(f"{searchTerm}")
+      else:
+        searchQuery += f"{searchField} LIKE %s"
+        params.append(f"%{searchTerm}%")
     else:
       searchQuery += """
-        c.college_code LIKE %s 
-        OR c.college_name LIKE %s
+        college_code LIKE %s 
+        OR college_name LIKE %s
       """
       params.extend([f"%{searchTerm}%"] * 2)
 
@@ -152,7 +156,7 @@ class College:
     # Query to get the total count of matching records
     countQuery = f"""
       SELECT COUNT(*) as total 
-      FROM colleges c 
+      FROM colleges
       {searchQuery}
     """
 
@@ -165,7 +169,7 @@ class College:
 
     query = f"""
       SELECT * 
-      FROM colleges c 
+      FROM colleges 
       {searchQuery}
       ORDER BY {sortBy1} {sortOrder}, {sortBy2} ASC
       LIMIT %s OFFSET %s

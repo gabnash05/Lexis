@@ -86,8 +86,12 @@ class Program:
     searchQuery = "WHERE ("
 
     if searchField:
-      searchQuery += f"{searchField} = %s"
-      params.append(f"{searchTerm}")
+      if searchField == "program_code" and searchTerm != "":
+        searchQuery += f"{searchField} = %s"
+        params.append(f"{searchTerm}")
+      else:
+        searchQuery += f"{searchField} LIKE %s"
+        params.append(f"%{searchTerm}%")
     else:
       searchQuery += """
         program_code LIKE %s 
