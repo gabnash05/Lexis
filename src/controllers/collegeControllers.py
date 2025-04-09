@@ -24,6 +24,9 @@ def updateCollege(originalCollegeCode: str, newCollegeCode: Any, newCollegeName:
   if not College.collegeCodeExists(originalCollegeCode):
     return "college_code does not exist"
 
+  if College.collegeCodeExists(newCollegeCode):
+    return "College already exists"
+  
   updateData = {
     "college_code": newCollegeCode, 
     "college_name": newCollegeName,

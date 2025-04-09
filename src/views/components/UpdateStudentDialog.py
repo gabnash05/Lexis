@@ -59,9 +59,11 @@ class UpdateStudentDialog(QtWidgets.QDialog):
     # Form Fields
     self.firstNameInput = QtWidgets.QLineEdit(self)
     self.firstNameInput.setText(studentData[1])
+    self.firstNameInput.setMaxLength(255)
 
     self.lastNameInput = QtWidgets.QLineEdit(self)
     self.lastNameInput.setText(studentData[2])
+    self.lastNameInput.setMaxLength(255)
 
     self.yearLevelInput = QtWidgets.QComboBox(self)
     self.yearLevelInput.addItems(["1", "2", "3", "4", "5"])

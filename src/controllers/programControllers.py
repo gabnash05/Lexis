@@ -27,6 +27,9 @@ def updateProgram(originalProgramCode: str, newProgramCode: Any, newProgramName:
   
   if not College.collegeCodeExists(newCollegeCode):
     return "College Code does not exist"
+  
+  if Program.programCodeExists(newProgramCode):
+    return "Program already exists"
 
   updateData = {
     "program_code": newProgramCode,

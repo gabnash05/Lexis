@@ -55,9 +55,11 @@ class UpdateCollegeDialog(QtWidgets.QDialog):
       # Form Fields
       self.collegeCodeInput = QtWidgets.QLineEdit(self)
       self.collegeCodeInput.setText(collegeData[0])
+      self.collegeCodeInput.setMaxLength(10)
 
       self.collegeNameInput = QtWidgets.QLineEdit(self)
       self.collegeNameInput.setText(collegeData[1])
+      self.collegeNameInput.setMaxLength(255)
 
       # Section Headers
       self.titleLabel = QtWidgets.QLabel("Update College")

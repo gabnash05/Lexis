@@ -49,9 +49,11 @@ class AddProgramDialog(QtWidgets.QDialog):
     # Create form fields
     self.programCodeInput = QtWidgets.QLineEdit(self)
     self.programCodeInput.setPlaceholderText("BSCS")
+    self.programCodeInput.setMaxLength(50)
 
     self.programNameInput = QtWidgets.QLineEdit(self)
     self.programNameInput.setPlaceholderText("Bachelor of Science in Computer Science")
+    self.programNameInput.setMaxLength(255)
 
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 

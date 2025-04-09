@@ -50,9 +50,11 @@ class AddStudentDialog(QtWidgets.QDialog):
     # Create form fields
     self.firstNameInput = QtWidgets.QLineEdit(self)
     self.firstNameInput.setPlaceholderText("John")
+    self.firstNameInput.setMaxLength(255)
 
     self.lastNameInput = QtWidgets.QLineEdit(self)
     self.lastNameInput.setPlaceholderText("Doe")
+    self.lastNameInput.setMaxLength(255)
 
     self.genderInput = QtWidgets.QComboBox(self)
     self.genderInput.addItems(["Male", "Female", "Others"])

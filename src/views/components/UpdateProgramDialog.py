@@ -56,9 +56,11 @@ class UpdateProgramDialog(QtWidgets.QDialog):
     # Form Fields
     self.programCodeInput = QtWidgets.QLineEdit(self)
     self.programCodeInput.setText(programData[0])
+    self.programCodeInput.setMaxLength(50)
 
     self.programNameInput = QtWidgets.QLineEdit(self)
     self.programNameInput.setText(programData[1])
+    self.programNameInput.setMaxLength(255)
 
     self.collegeCodeInput = QtWidgets.QComboBox(self)
 
