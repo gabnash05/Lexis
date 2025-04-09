@@ -110,7 +110,6 @@ def batchUpdateStudents(studentIds: List[str], newYearLevel: int, newGender: str
       "year_level": newYearLevel,
       "gender": newGender,
       "program_code": newProgramCode,
-      "college_code": newCollegeCode
     }.items()
     if value is not None 
   }

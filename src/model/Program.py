@@ -89,6 +89,9 @@ class Program:
       if searchField == "program_code" and searchTerm != "":
         searchQuery += f"{searchField} = %s"
         params.append(f"{searchTerm}")
+      elif searchField == "college_code":
+        searchQuery += f"{searchField} = %s"
+        params.append(f"{searchTerm}")
       else:
         searchQuery += f"{searchField} LIKE %s"
         params.append(f"%{searchTerm}%")
